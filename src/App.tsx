@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import "./App.css"
+
+import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 
 import type { AppEntry } from "./types";
 
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { invoke } from "@tauri-apps/api/core";
+
+// icons
+import { Search } from "lucide-react";
+import { CornerDownLeft } from "lucide-react";
 
 function App() {
   // complete application index returned by rust backend
@@ -18,6 +24,15 @@ function App() {
 
   // error state
   const [error, setError] = useState<string | null>(null)
+
+  const selectedRef = useRef<HTMLParagraphElement | null>(null);
+
+
+  useEffect(() => {
+    selectedRef.current?.scrollIntoView({
+      block: "nearest",
+    });
+  }, [selectedIndex, query]);
 
   useEffect(() => {
     invoke<AppEntry[]>("search_apps")
@@ -55,6 +70,22 @@ function App() {
     }
   }
 
+  // launching app
+  async function launchApp(app: AppEntry) {
+    try {
+      await invoke("launch_app", {
+        exec: app.exec,
+      })
+
+      console.log("Launching:", app.name, "Command:", app.exec)
+
+      await hideWindow()
+    } catch (error) {
+      console.error("failed to launch application:", error)
+      setError(`failed to launch ${app.name}`)
+    }
+  }
+
   // keyboard handler
   async function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
@@ -81,20 +112,7 @@ function App() {
       if (!selectedApp) {
         return
       }
-
-      try {
-        await invoke("launch_app", {
-          exec: selectedApp.exec,
-        })
-
-        console.log("Launching: ", selectedApp.name, "\tCommand: ", selectedApp.exec)
-
-        await hideWindow()
-      } catch (error) {
-        console.error("failed to launch application: ", error)
-        setError(`failed to launch ${selectedApp.name}`)
-      }
-
+      await launchApp(selectedApp)
       return
     }
 
@@ -105,28 +123,54 @@ function App() {
   }
 
   return (
-    <main>
-      <input
-        type="text"
-        value={query}
-        onChange={(event) => handleQueryChange(event.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Search applications..."
-        autoFocus
-      />
 
-      {error && <p>{error}</p>}
+    <div className="app">
 
-      <p>
-        Loaded: {apps.length} apps | Matching: {filteredApps.length}
-      </p>
+      <div className="search-container">
+        {/*search icon*/}
+        <div className="search-icon">
+          <Search size={20} strokeWidth={3}/>
+        </div>
 
-      <ul>
+        {/*input*/}
+        <input
+          type="text"
+          value={query}
+          onChange={(event) => handleQueryChange(event.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Search applications..."
+          autoFocus
+          className="search-input"
+        />
+      </div>
+
+      {/*results*/}
+      <div className="results">
         {filteredApps.map((app, index) => (
-          <li key={app.name} style={{background: index === selectedIndex? "#ddd" : "transparent"}}>{app.name}</li>
-        ))}
-      </ul>
-    </main>
+            <p
+              key={app.name}
+              ref={index === selectedIndex ? selectedRef : null}
+              className={`result ${index === selectedIndex ? "selected" : ""}`}
+
+              onMouseEnter={() => setSelectedIndex(index)}
+              onClick={() => launchApp(app)}
+            >
+              <span>{app.name}</span>
+
+              {index === selectedIndex && (
+                <CornerDownLeft size={16} strokeWidth={3} />
+              )}
+            </p>
+          ))}
+      </div>
+
+      {/*footer*/}
+      <div className="footer">
+        {filteredApps.length} results
+      </div>
+
+    </div>
+
   )
 }
 

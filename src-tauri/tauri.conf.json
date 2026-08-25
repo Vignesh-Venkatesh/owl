@@ -13,8 +13,13 @@
     "windows": [
       {
         "title": "owl",
-        "width": 800,
-        "height": 600
+        "width": 680,
+        "height": 420,
+        "resizable": false,
+        "center": true,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "transparent": true
       }
     ],
     "security": {

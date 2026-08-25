@@ -56,6 +56,10 @@ pub fn run() {
                             if window.is_visible().unwrap_or(false) {
                                 let _ = window.hide();
                             } else {
+                                let _ = window.center();
+                                let _ = window.set_focusable(true);
+                                let _ = window.set_always_on_top(true);
+                                let _ = window.unminimize();
                                 let _ = window.show();
                                 let _ = window.set_focus();
                             }
