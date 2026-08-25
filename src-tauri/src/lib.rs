@@ -1,6 +1,7 @@
 mod indexer;
 
 use indexer::AppEntry;
+use std::process::{Command, Stdio};
 use tauri::Manager;
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
@@ -17,6 +18,29 @@ fn search_apps() -> Vec<AppEntry> {
     println!("search_apps returning {} apps", apps.len());
 
     apps
+}
+
+#[tauri::command]
+fn launch_app(exec: String) -> Result<(), String> {
+    // keeping is simple for now
+    // not a complete parser
+    let mut parts = exec.split_whitespace();
+
+    let Some(program) = parts.next() else {
+        return Err("cannot launch an empty Exec command".to_string());
+    };
+
+    Command::new(program)
+        .args(parts)
+        // using spawn without wait coz it will start the application and return to its own event loop
+        // instead of blocking until that app exits
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|error| format!("failed to launch `{exec}`: {error}"))?;
+
+    Ok(())
 }
 
 // startup function
@@ -43,7 +67,7 @@ pub fn run() {
         // install opener plugin
         .plugin(tauri_plugin_opener::init())
         // making greet function callable from frontend
-        .invoke_handler(tauri::generate_handler![greet, search_apps])
+        .invoke_handler(tauri::generate_handler![greet, search_apps, launch_app])
         // runs during startup
         .setup(|app| {
             // shortcut
