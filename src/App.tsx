@@ -1,51 +1,62 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import { useEffect, useState } from "react";
+
+import type { AppEntry } from "./types";
 import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  // complete application index returned by rust backend
+  const [apps, setApps] = useState<AppEntry[]>([])
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  // whatver the user has currently types in the launcher
+  const [query, setQuery] = useState("")
+
+  // error state
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    invoke<AppEntry[]>("search_apps")
+      .then((indexedApps) => {
+        setApps(indexedApps)
+      })
+      .catch((error) => {
+        console.error("failed to index applications:", error)
+        setError("failed to load applications.")
+      })
+  }, [])
+
+  // searching happens entirely in the frontend... for now...
+  // apps only changes when rust gives a new application index
+  // query changes on every keystroke. no filesystem access happens here.
+  const normalizedQuery = query.toLowerCase()
+
+  const filteredApps = apps.filter((app) => {
+    const normalizedName = app.name.toLowerCase()
+    return normalizedName.includes(normalizedQuery)
+  })
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+    <main>
+      <input
+        type="text"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder="Search applications..."
+        autoFocus
+      />
 
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+      {error && <p>{error}</p>}
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
+      <p>
+        Loaded: {apps.length} apps | Matching: {filteredApps.length}
+      </p>
+
+      <ul>
+        {filteredApps.map((app) => (
+          <li key={app.name}>{app.name}</li>
+        ))}
+      </ul>
     </main>
-  );
+  )
 }
 
 export default App;

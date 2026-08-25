@@ -1,5 +1,6 @@
 mod indexer;
 
+use indexer::AppEntry;
 use tauri::Manager;
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
@@ -7,6 +8,15 @@ use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut,
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
+}
+
+#[tauri::command]
+fn search_apps() -> Vec<AppEntry> {
+    let apps = indexer::index_apps();
+
+    println!("search_apps returning {} apps", apps.len());
+
+    apps
 }
 
 // startup function
@@ -33,7 +43,7 @@ pub fn run() {
         // install opener plugin
         .plugin(tauri_plugin_opener::init())
         // making greet function callable from frontend
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, search_apps])
         // runs during startup
         .setup(|app| {
             // shortcut
