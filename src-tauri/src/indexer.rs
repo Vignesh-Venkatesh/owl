@@ -215,10 +215,15 @@ fn scan_directory(path: &Path) -> Vec<AppEntry> {
 
 pub fn index_apps() -> Vec<AppEntry> {
     let system_dir = PathBuf::from("/usr/share/applications");
+    let system_flatpak_dir = PathBuf::from("/var/lib/flatpak/exports/share/applications");
 
     let user_dir = env::var_os("HOME")
         .map(PathBuf::from)
         .map(|home| home.join(".local/share/applications"));
+
+    let user_flatpak_dir = env::var_os("HOME")
+        .map(PathBuf::from)
+        .map(|home| home.join(".local/share/flatpak/exports/share/applications"));
 
     let mut apps_by_name: HashMap<String, AppEntry> = HashMap::new();
 
@@ -227,11 +232,23 @@ pub fn index_apps() -> Vec<AppEntry> {
         apps_by_name.insert(app.name.clone(), app);
     }
 
+    // indexing system flatpak applications
+    for app in scan_directory(&system_flatpak_dir) {
+        apps_by_name.insert(app.name.clone(), app);
+    }
+
     // indexing user applications second
 
     // replaces an existing value if the key already exists, so a user application with the same name automatically overrides the system application
     if let Some(user_dir) = user_dir {
         for app in scan_directory(&user_dir) {
+            apps_by_name.insert(app.name.clone(), app);
+        }
+    }
+
+    // indexing user flatpak applications
+    if let Some(user_flatpak_dir) = user_flatpak_dir {
+        for app in scan_directory(&user_flatpak_dir) {
             apps_by_name.insert(app.name.clone(), app);
         }
     }
