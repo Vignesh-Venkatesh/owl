@@ -9,7 +9,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 
 // icons
-import { Search, CornerDownLeft, AppWindow, FileQuestionMark } from "lucide-react";
+import { Search, CornerDownLeft, FileQuestionMark } from "lucide-react";
 
 function App() {
 
