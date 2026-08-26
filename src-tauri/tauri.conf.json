@@ -13,7 +13,7 @@
     "windows": [
       {
         "title": "owl",
-        "width": 680,
+        "width": 720,
         "height": 420,
         "resizable": false,
         "center": true,
