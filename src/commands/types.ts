@@ -1,3 +1,5 @@
+import type { AppEntry } from "../types"
+
 // command has to fall in one of these categories
 export type CommandCategory =
   | "core"
@@ -19,3 +21,11 @@ export interface Command {
   category: CommandCategory
   mode: CommandMode
 }
+
+
+export type ResultItem =
+  | {
+      type: "app"
+      id: string
+      app: AppEntry
+    }

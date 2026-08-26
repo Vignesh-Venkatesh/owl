@@ -13,6 +13,8 @@ import SearchBar from "./components/SearchBar"
 import ResultArea from "./components/results/ResultArea"
 import Footer from "./components/Footer"
 
+import { searchApps } from "./commands/providers/apps"
+
 function App() {
   // complete application index returned by rust backend
   const [apps, setApps] = useState<AppEntry[]>([])
@@ -50,12 +52,8 @@ function App() {
   }, [])
 
   // searching happens entirely in the frontend... for now...
-  const normalizedQuery = query.toLowerCase()
-
-  const filteredApps = apps.filter((app) => {
-    const normalizedName = app.name.toLowerCase()
-    return normalizedName.includes(normalizedQuery)
-  })
+  // results returned by the active search provider
+  const results = searchApps(apps, query)
 
   // function to handle query changes
   function handleQueryChange(value: string) {
@@ -96,12 +94,12 @@ function App() {
     if (event.key === "ArrowDown") {
       event.preventDefault()
 
-      if (filteredApps.length === 0) {
+      if (results.length === 0) {
         return
       }
 
       setSelectedIndex((currentIndex) =>
-        Math.min(currentIndex + 1, filteredApps.length - 1)
+        Math.min(currentIndex + 1, results.length - 1)
       )
 
       return
@@ -110,13 +108,11 @@ function App() {
     if (event.key === "ArrowUp") {
       event.preventDefault()
 
-      if (filteredApps.length === 0) {
+      if (results.length === 0) {
         return
       }
 
-      setSelectedIndex((currentIndex) =>
-        Math.max(currentIndex - 1, 0)
-      )
+      setSelectedIndex((currentIndex) => Math.max(currentIndex - 1, 0))
 
       return
     }
@@ -124,13 +120,13 @@ function App() {
     if (event.key === "Enter") {
       event.preventDefault()
 
-      const selectedApp = filteredApps[selectedIndex]
+      const selectedResult = results[selectedIndex]
 
-      if (!selectedApp) {
+      if (!selectedResult) {
         return
       }
 
-      await launchApp(selectedApp)
+      await launchApp(selectedResult.app)
 
       return
     }
@@ -146,15 +142,14 @@ function App() {
       {/* search bar */}
       <SearchBar
         query={query}
-        resultCount={filteredApps.length}
+        resultCount={results.length}
         onQueryChange={handleQueryChange}
         onKeyDown={handleKeyDown}
       />
 
       {/* result area */}
       <ResultArea
-        mode="apps"
-        apps={filteredApps}
+        results={results}
         query={query}
         error={error}
         selectedIndex={selectedIndex}
@@ -164,7 +159,7 @@ function App() {
       />
 
       {/* footer */}
-      <Footer resultCount={filteredApps.length} />
+      <Footer resultCount={results.length} />
     </div>
   )
 }

@@ -2,13 +2,13 @@ import type { RefObject } from "react"
 
 // types
 import type { AppEntry } from "../../types"
+import type { ResultItem } from "../../commands/types"
 
 // components
-import AppResults from "./AppResults"
+import { rendererMap } from "./rendererMap"
 
 type ResultAreaProps = {
-  mode: "apps"
-  apps: AppEntry[]
+  results: ResultItem[]
   query: string
   error: string | null
   selectedIndex: number
@@ -17,21 +17,21 @@ type ResultAreaProps = {
   selectedRef: RefObject<HTMLParagraphElement | null>
 }
 
-function ResultArea({mode,apps,query,error,selectedIndex,onSelect,launchApp,selectedRef}: ResultAreaProps) {
-  switch (mode) {
-    case "apps":
-      return (
-        <AppResults
-          apps={apps}
-          query={query}
-          error={error}
-          selectedIndex={selectedIndex}
-          onSelect={onSelect}
-          launchApp={launchApp}
-          selectedRef={selectedRef}
-        />
-      )
-  }
+function ResultArea({results,query,error,selectedIndex,onSelect,launchApp,selectedRef}: ResultAreaProps) {
+  const resultType = results[0]?.type ?? "app"
+  const Renderer = rendererMap[resultType]
+
+  return (
+    <Renderer
+      results={results}
+      query={query}
+      error={error}
+      selectedIndex={selectedIndex}
+      onSelect={onSelect}
+      launchApp={launchApp}
+      selectedRef={selectedRef}
+    />
+  )
 }
 
 export default ResultArea
