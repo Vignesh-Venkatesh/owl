@@ -4,7 +4,7 @@
 
 # owl
 
-### An app launcher for now.
+### an app launcher for now
 
 [Features](#features) • [Install](#install) • [Usage](#usage) • [Development](#development) • [Roadmap](#roadmap)
 
@@ -14,7 +14,7 @@
 
 ## What is owl?
 
-owl is an application launcher
+owl is an application launcher.
 
 It's early, small, and currently built around Linux. The goal is to keep the launcher fast and simple while gradually adding the things that are actually useful.
 
@@ -43,10 +43,10 @@ Ctrl + Alt + Space
 Start typing the name of an application.
 
 ```text
-Ctrl + Alt + Space (or) Esc      Open / hide owl
-↑ / ↓                            Navigate results
-Enter                            Launch selected app
-Esc                              Hide owl
+Ctrl + Alt + Space      Open / hide owl
+↑ / ↓                   Navigate results
+Enter                   Launch selected app
+Esc                     Hide owl
 ```
 
 
@@ -55,7 +55,7 @@ Esc                              Hide owl
 > [!NOTE]
 > owl is currently developed and tested on Linux.
 
-<!--Download the latest version from the [Releases](../../releases) page.-->
+Download the latest version from the [Releases](../../releases) page.
 
 Linux builds are available as:
 
@@ -100,7 +100,7 @@ bun run tauri build
 
 This is `v0.1.0`. Things will be rough around the edges.
 
-- Some terminal applications, may not launch correctly.
+- Some terminal applications may not launch correctly.
 - owl has only been tested on Linux so far.
 - Application discovery currently follows Linux desktop entry conventions.
 
@@ -130,6 +130,6 @@ No promises, but these are some things I'd like to explore:
 
 <div align="center">
 
-**owl**, an app launcher for now.
+**owl**. An app launcher for now.
 
 </div>
