@@ -1,6 +1,6 @@
 [package]
 name = "owl"
-version = "0.1.0"
+version = "0.1.1"
 description = "An app launcher for now"
 authors = ["Vignesh"]
 edition = "2021"
