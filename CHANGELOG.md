@@ -35,6 +35,9 @@ A visual polish release focused on improving owl's interface and introducing the
 
 * Fixed invalid HTML nesting in application result rows.
 
+### Known Limitation
+* Aware that themes not configurable without modifying the source code. Will roll out this feature in a future release.
+
 ---
 
 ## [0.1.0]
