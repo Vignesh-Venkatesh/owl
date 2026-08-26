@@ -9,10 +9,11 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 
 // icons
-import { Search } from "lucide-react";
-import { CornerDownLeft } from "lucide-react";
+import { Search, CornerDownLeft, AppWindow, FileQuestionMark } from "lucide-react";
 
 function App() {
+
+
   // complete application index returned by rust backend
   const [apps, setApps] = useState<AppEntry[]>([])
 
@@ -87,6 +88,30 @@ function App() {
     }
   }
 
+  // function to assign application icon and fallback
+  function ApplicationIcon({ app }: { app: AppEntry }) {
+    // for failed to load application icons
+    const [failed, setFailed] = useState(false)
+
+    if (!app.icon || failed) {
+      return (
+        <div className="app-icon-fallback">
+          {/*<AppWindow size={28} strokeWidth={1} />*/}
+          <FileQuestionMark size={28} strokeWidth={2} />
+        </div>
+      )
+    }
+
+    return (
+      <img
+        src={convertFileSrc(app.icon)}
+        alt=""
+        className="app-icon"
+        onError={() => setFailed(true)}
+      />
+    )
+  }
+
   // keyboard handler
   async function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
@@ -157,16 +182,10 @@ function App() {
               onClick={() => launchApp(app)}
           >
             <div className="result-info">
-              {/*app icon*/}
-              {app.icon && (
-                <img
-                  src={convertFileSrc(app.icon)}
-                  alt=""
-                  className="app-icon"
-                />
-              )}
+              {/* app icon */}
+              <ApplicationIcon app={app} />
 
-              {/*app name*/}
+              {/* app name */}
               <span>{app.name}</span>
             </div>
 
