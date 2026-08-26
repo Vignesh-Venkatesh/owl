@@ -6,7 +6,7 @@ import type { KeyboardEvent } from "react";
 import type { AppEntry } from "./types";
 
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { invoke } from "@tauri-apps/api/core";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 
 // icons
 import { Search } from "lucide-react";
@@ -38,6 +38,7 @@ function App() {
     invoke<AppEntry[]>("search_apps")
       .then((indexedApps) => {
         setApps(indexedApps)
+
       })
       .catch((error) => {
         console.error("failed to index applications:", error)
@@ -154,12 +155,25 @@ function App() {
 
               onMouseEnter={() => setSelectedIndex(index)}
               onClick={() => launchApp(app)}
-            >
-              <span>{app.name}</span>
-
-              {index === selectedIndex && (
-                <CornerDownLeft size={16} strokeWidth={3} />
+          >
+            <div className="result-info">
+              {/*app icon*/}
+              {app.icon && (
+                <img
+                  src={convertFileSrc(app.icon)}
+                  alt=""
+                  className="app-icon"
+                />
               )}
+
+              {/*app name*/}
+              <span>{app.name}</span>
+            </div>
+
+            {/*return icon*/}
+            {index === selectedIndex && (
+              <CornerDownLeft size={16} strokeWidth={3} />
+            )}
             </p>
           ))}
       </div>

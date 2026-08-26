@@ -23,7 +23,18 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost data:",
+      "assetProtocol": {
+        "enable": true,
+        "scope": {
+          "allow": [
+            "/usr/share/icons/**/*",
+            "/usr/share/pixmaps/**/*",
+            "$HOME/.local/zed.app/share/icons/**/*",
+            "/opt/zen/browser/chrome/icons/**/*"
+          ]
+        }
+      }
     }
   },
   "bundle": {

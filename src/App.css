@@ -96,6 +96,20 @@ body {
   cursor: pointer;
 }
 
+.result-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.app-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .selected {
     background-color: var(--surface);
     border-left: 5px solid var(--accent);

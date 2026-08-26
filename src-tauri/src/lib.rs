@@ -12,10 +12,19 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn search_apps() -> Vec<AppEntry> {
+fn search_apps(app: tauri::AppHandle) -> Vec<AppEntry> {
     let apps = indexer::index_apps();
 
     println!("search_apps returning {} apps", apps.len());
+    let scope = app.asset_protocol_scope();
+
+    for entry in &apps {
+        if let Some(icon) = &entry.icon {
+            if let Err(error) = scope.allow_file(icon) {
+                eprintln!("warning: could not allow icon {}: {}", icon, error);
+            }
+        }
+    }
 
     apps
 }

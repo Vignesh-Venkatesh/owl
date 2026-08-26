@@ -23,6 +23,32 @@ fn clean_exec(exec: &str) -> String {
     cleaned.trim().to_string()
 }
 
+// icon resolver
+fn resolve_icon(icon: &str) -> Option<String> {
+    let icon_path = Path::new(icon);
+
+    // absolute icon path from the .desktop file
+    if icon_path.is_absolute() && icon_path.exists() {
+        return icon_path
+            .canonicalize()
+            .ok()
+            .map(|path| path.to_string_lossy().to_string());
+    }
+
+    let icon_name = icon
+        .strip_suffix(".png")
+        .or_else(|| icon.strip_suffix(".svg"))
+        .or_else(|| icon.strip_suffix(".xpm"))
+        .unwrap_or(icon);
+
+    freedesktop_icons::lookup(icon_name)
+        .with_size(48)
+        .with_cache()
+        .find()
+        .and_then(|path| path.canonicalize().ok())
+        .map(|path| path.to_string_lossy().to_string())
+}
+
 // .desktop text parser
 fn parse_desktop_entry(contents: &str) -> Result<Option<AppEntry>, String> {
     let mut in_desktop_entry = false;
@@ -110,7 +136,7 @@ fn parse_desktop_entry(contents: &str) -> Result<Option<AppEntry>, String> {
     Ok(Some(AppEntry {
         name,
         exec: clean_exec(&exec),
-        icon,
+        icon: icon.and_then(|icon| resolve_icon(&icon)),
     }))
 }
 
