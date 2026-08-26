@@ -1,0 +1,12 @@
+[data-theme="owl"] {
+  --t-bg: #12161d;
+  --t-surface: #1b222c;
+  --t-surface-2: #232c38;
+  --t-border: #2d3644;
+  --t-text: #f2ecdd;
+  --t-text-dim: #c9c2ae;
+  --t-accent: #e2a53c;
+  --t-muted: #7c8898;
+  --t-danger: #d9705f;
+  --t-good: #7fae7a;
+}

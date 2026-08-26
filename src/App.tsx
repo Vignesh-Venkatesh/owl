@@ -1,23 +1,23 @@
 import "./App.css"
 
-import { useEffect, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
+import { useEffect, useRef, useState } from "react"
+import type { KeyboardEvent } from "react"
 
-import type { AppEntry } from "./types";
+import type { AppEntry } from "./types"
 
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { convertFileSrc, invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window"
+import { invoke } from "@tauri-apps/api/core"
 
-// icons
-import { Search, CornerDownLeft, FileQuestionMark } from "lucide-react";
+// components
+import SearchBar from "./components/SearchBar"
+import ResultArea from "./components/results/ResultArea"
+import Footer from "./components/Footer"
 
 function App() {
-
-
   // complete application index returned by rust backend
   const [apps, setApps] = useState<AppEntry[]>([])
 
-  // whatver the user has currently types in the launcher
+  // whatever the user has currently typed in the launcher
   const [query, setQuery] = useState("")
 
   // index of the currently highlighted result
@@ -26,15 +26,16 @@ function App() {
   // error state
   const [error, setError] = useState<string | null>(null)
 
-  const selectedRef = useRef<HTMLParagraphElement | null>(null);
-
+  // for keeping current selection in view
+  const selectedRef = useRef<HTMLParagraphElement | null>(null)
 
   useEffect(() => {
     selectedRef.current?.scrollIntoView({
       block: "nearest",
-    });
-  }, [selectedIndex, query]);
+    })
+  }, [selectedIndex, query])
 
+  // loading application list
   useEffect(() => {
     setError(null)
 
@@ -49,9 +50,8 @@ function App() {
   }, [])
 
   // searching happens entirely in the frontend... for now...
-  // apps only changes when rust gives a new application index
-  // query changes on every keystroke. no filesystem access happens here.
   const normalizedQuery = query.toLowerCase()
+
   const filteredApps = apps.filter((app) => {
     const normalizedName = app.name.toLowerCase()
     return normalizedName.includes(normalizedQuery)
@@ -91,57 +91,47 @@ function App() {
     }
   }
 
-  // function to assign application icon and fallback
-  function ApplicationIcon({ app }: { app: AppEntry }) {
-    // for failed to load application icons
-    const [failed, setFailed] = useState(false)
-
-    if (!app.icon || failed) {
-      return (
-        <div className="app-icon-fallback">
-          {/*<AppWindow size={28} strokeWidth={1} />*/}
-          <FileQuestionMark size={28} strokeWidth={2} />
-        </div>
-      )
-    }
-
-    return (
-      <img
-        src={convertFileSrc(app.icon)}
-        alt=""
-        className="app-icon"
-        onError={() => setFailed(true)}
-      />
-    )
-  }
-
   // keyboard handler
   async function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
       event.preventDefault()
+
       if (filteredApps.length === 0) {
         return
       }
-      setSelectedIndex((currentIndex) => Math.min(currentIndex + 1, filteredApps.length - 1))
+
+      setSelectedIndex((currentIndex) =>
+        Math.min(currentIndex + 1, filteredApps.length - 1)
+      )
+
       return
     }
 
     if (event.key === "ArrowUp") {
       event.preventDefault()
+
       if (filteredApps.length === 0) {
         return
       }
-      setSelectedIndex((currentIndex) => Math.max(currentIndex - 1, 0))
+
+      setSelectedIndex((currentIndex) =>
+        Math.max(currentIndex - 1, 0)
+      )
+
       return
     }
 
     if (event.key === "Enter") {
       event.preventDefault()
+
       const selectedApp = filteredApps[selectedIndex]
+
       if (!selectedApp) {
         return
       }
+
       await launchApp(selectedApp)
+
       return
     }
 
@@ -152,77 +142,31 @@ function App() {
   }
 
   return (
+    <div className="flex h-screen w-screen flex-col overflow-hidden rounded-xl border border-border bg-bg text-text">
+      {/* search bar */}
+      <SearchBar
+        query={query}
+        resultCount={filteredApps.length}
+        onQueryChange={handleQueryChange}
+        onKeyDown={handleKeyDown}
+      />
 
-    <div className="app">
+      {/* result area */}
+      <ResultArea
+        mode="apps"
+        apps={filteredApps}
+        query={query}
+        error={error}
+        selectedIndex={selectedIndex}
+        onSelect={setSelectedIndex}
+        launchApp={launchApp}
+        selectedRef={selectedRef}
+      />
 
-      <div className="search-container">
-        {/*search icon*/}
-        <div className="search-icon">
-          <Search size={20} strokeWidth={3}/>
-        </div>
-
-        {/*input*/}
-        <input
-          type="text"
-          value={query}
-          onChange={(event) => handleQueryChange(event.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Search applications..."
-          autoFocus
-          className="search-input"
-        />
-      </div>
-
-      {/*results*/}
-      <div className="results">
-        {error ? (
-          <div className="state-message">
-            <p className="state-title">Something went wrong</p>
-            <p className="state-description">{error}</p>
-          </div>
-        ) : filteredApps.length === 0 ? (
-          <div className="state-message">
-            <p className="state-title">No applications found</p>
-
-            {query && (
-              <p className="state-description">
-                No matches for "{query}"
-              </p>
-            )}
-          </div>
-        ) : (
-          filteredApps.map((app, index) => (
-            <p
-              key={app.name}
-              ref={index === selectedIndex ? selectedRef : null}
-              className={`result ${index === selectedIndex ? "selected" : ""}`}
-              onMouseEnter={() => setSelectedIndex(index)}
-              onClick={() => launchApp(app)}
-            >
-              <div className="result-info">
-                {/*app icon*/}
-                <ApplicationIcon app={app} />
-                {/*app name*/}
-                <span>{app.name}</span>
-              </div>
-
-              {/*return icon*/}
-              {index === selectedIndex && (
-                <CornerDownLeft size={16} strokeWidth={3} />
-              )}
-            </p>
-          ))
-        )}
-      </div>
-
-      {/*footer*/}
-      <div className="footer">
-        {filteredApps.length} results
-      </div>
-
+      {/* footer */}
+      <Footer resultCount={filteredApps.length} />
     </div>
-
   )
 }
 
-export default App;
+export default App
