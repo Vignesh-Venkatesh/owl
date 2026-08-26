@@ -77,6 +77,7 @@ function App() {
     try {
       await invoke("launch_app", {
         exec: app.exec,
+        terminal: app.terminal,
       })
 
       console.log("Launching:", app.name, "Command:", app.exec)

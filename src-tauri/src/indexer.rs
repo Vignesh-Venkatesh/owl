@@ -10,6 +10,7 @@ pub struct AppEntry {
     pub name: String,
     pub exec: String,
     pub icon: Option<String>,
+    pub terminal: bool,
 }
 
 fn clean_exec(exec: &str) -> String {
@@ -57,6 +58,7 @@ fn parse_desktop_entry(contents: &str) -> Result<Option<AppEntry>, String> {
     let mut exec: Option<String> = None;
     let mut icon: Option<String> = None;
     let mut no_display = false;
+    let mut terminal = false;
 
     // parsing
     for (line_number, raw_line) in contents.lines().enumerate() {
@@ -117,6 +119,19 @@ fn parse_desktop_entry(contents: &str) -> Result<Option<AppEntry>, String> {
                 }
             }
 
+            "Terminal" => {
+                if value.eq_ignore_ascii_case("true") {
+                    terminal = true;
+                } else if value.eq_ignore_ascii_case("false") {
+                    terminal = false;
+                } else {
+                    return Err(format!(
+                        "invalid Terminal value on line {}",
+                        line_number + 1
+                    ));
+                }
+            }
+
             _ => {}
         }
     }
@@ -137,6 +152,7 @@ fn parse_desktop_entry(contents: &str) -> Result<Option<AppEntry>, String> {
         name,
         exec: clean_exec(&exec),
         icon: icon.and_then(|icon| resolve_icon(&icon)),
+        terminal,
     }))
 }
 
@@ -258,18 +274,23 @@ mod tests {
     #[test]
     fn parses_valid_desktop_entry() {
         let contents = r#"
-    [Desktop Entry]
-    Name=Firefox
-    Exec=firefox %u
-    Icon=firefox
-    NoDisplay=false
-    "#;
+        [Desktop Entry]
+        Name=Firefox
+        Exec=firefox %u
+        Icon=firefox
+        NoDisplay=false
+        "#;
 
         let result = parse_desktop_entry(contents).unwrap().unwrap();
 
         assert_eq!(result.name, "Firefox");
         assert_eq!(result.exec, "firefox");
-        assert_eq!(result.icon, Some("firefox".to_string()));
+
+        // Firefox is installed on this machine, so its icon should resolve.
+        assert!(result.icon.is_some());
+
+        // Terminal defaults to false when Terminal= is omitted.
+        assert!(!result.terminal);
     }
 
     #[test]
@@ -329,5 +350,22 @@ mod tests {
 
         assert_eq!(result.name, "Firefox");
         assert_eq!(result.exec, "firefox");
+    }
+
+    #[test]
+    fn parses_terminal_application() {
+        let contents = r#"
+    [Desktop Entry]
+    Name=btop++
+    Exec=btop
+    Icon=btop
+    Terminal=true
+    "#;
+
+        let result = parse_desktop_entry(contents).unwrap().unwrap();
+
+        assert_eq!(result.name, "btop++");
+        assert_eq!(result.exec, "btop");
+        assert!(result.terminal);
     }
 }

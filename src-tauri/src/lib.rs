@@ -30,7 +30,7 @@ fn search_apps(app: tauri::AppHandle) -> Vec<AppEntry> {
 }
 
 #[tauri::command]
-fn launch_app(exec: String) -> Result<(), String> {
+fn launch_app(exec: String, terminal: bool) -> Result<(), String> {
     // keeping is simple for now
     // not a complete parser
     let mut parts = exec.split_whitespace();
@@ -39,15 +39,30 @@ fn launch_app(exec: String) -> Result<(), String> {
         return Err("cannot launch an empty Exec command".to_string());
     };
 
-    Command::new(program)
-        .args(parts)
-        // using spawn without wait coz it will start the application and return to its own event loop
-        // instead of blocking until that app exits
+    let args: Vec<&str> = parts.collect();
+
+    let mut command = if terminal {
+        let mut terminal_command = Command::new("x-terminal-emulator");
+
+        terminal_command.arg("-e").arg(program).args(&args);
+
+        terminal_command
+    } else {
+        let mut app_command = Command::new(program);
+
+        app_command.args(&args);
+
+        app_command
+    };
+
+    command
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
+        // using spawn without wait coz it will start the application and return to its own event loop
+        // instead of blocking until that app exits
         .spawn()
-        .map_err(|error| format!("failed to launch `{exec}`: {error}"))?;
+        .map_err(|error| format!("failed to launch application: {error}"))?;
 
     Ok(())
 }
