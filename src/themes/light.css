@@ -1,0 +1,12 @@
+[data-theme="light"] {
+  --t-bg: #f6f7f9;
+  --t-surface: #ffffff;
+  --t-surface-2: #eef1f5;
+  --t-border: #d8dde5;
+  --t-text: #1f2937;
+  --t-text-dim: #4b5563;
+  --t-accent: #2563eb;
+  --t-muted: #8a94a3;
+  --t-danger: #dc2626;
+  --t-good: #16a34a;
+}

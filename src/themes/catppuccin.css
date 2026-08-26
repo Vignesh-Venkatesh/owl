@@ -1,0 +1,12 @@
+[data-theme="catppuccin"] {
+  --t-bg: #1e1e2e;
+  --t-surface: #181825;
+  --t-surface-2: #313244;
+  --t-border: #45475a;
+  --t-text: #cdd6f4;
+  --t-text-dim: #bac2de;
+  --t-accent: #cba6f7;
+  --t-muted: #7f849c;
+  --t-danger: #f38ba8;
+  --t-good: #a6e3a1;
+}

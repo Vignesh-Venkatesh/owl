@@ -1,0 +1,12 @@
+[data-theme="nord"] {
+  --t-bg: #2e3440;
+  --t-surface: #3b4252;
+  --t-surface-2: #434c5e;
+  --t-border: #4c566a;
+  --t-text: #eceff4;
+  --t-text-dim: #d8dee9;
+  --t-accent: #88c0d0;
+  --t-muted: #7f8ca3;
+  --t-danger: #bf616a;
+  --t-good: #a3be8c;
+}

@@ -1,6 +1,28 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./assets/fonts/JetBrainsMonoNerdFont-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./assets/fonts/JetBrainsMonoNerdFont-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./assets/fonts/JetBrainsMonoNerdFont-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
 @theme {
+  --font-mono: "JetBrains Mono", monospace;
   --color-bg: var(--t-bg);
   --color-surface: var(--t-surface);
   --color-surface-2: var(--t-surface-2);
@@ -14,3 +36,13 @@
 }
 
 @import "./themes/owl.css";
+@import "./themes/midnight.css";
+@import "./themes/nord.css";
+@import "./themes/light.css";
+@import "./themes/oled.css";
+@import "./themes/gruvbox.css";
+@import "./themes/catppuccin.css";
+
+body {
+  font-family: "JetBrains Mono", monospace;
+}

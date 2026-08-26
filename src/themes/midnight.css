@@ -1,0 +1,12 @@
+[data-theme="midnight"] {
+  --t-bg: #0b0f14;
+  --t-surface: #121821;
+  --t-surface-2: #19212c;
+  --t-border: #26303d;
+  --t-text: #edf2f7;
+  --t-text-dim: #b6c0cc;
+  --t-accent: #6ea8fe;
+  --t-muted: #6f7c8c;
+  --t-danger: #e06c75;
+  --t-good: #8bc48a;
+}
