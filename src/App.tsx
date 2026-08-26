@@ -36,10 +36,11 @@ function App() {
   }, [selectedIndex, query]);
 
   useEffect(() => {
+    setError(null)
+
     invoke<AppEntry[]>("search_apps")
       .then((indexedApps) => {
         setApps(indexedApps)
-
       })
       .catch((error) => {
         console.error("failed to index applications:", error)
@@ -58,6 +59,7 @@ function App() {
 
   // function to handle query changes
   function handleQueryChange(value: string) {
+    setError(null)
     setQuery(value)
     setSelectedIndex(0)
   }
@@ -173,29 +175,44 @@ function App() {
 
       {/*results*/}
       <div className="results">
-        {filteredApps.map((app, index) => (
+        {error ? (
+          <div className="state-message">
+            <p className="state-title">Something went wrong</p>
+            <p className="state-description">{error}</p>
+          </div>
+        ) : filteredApps.length === 0 ? (
+          <div className="state-message">
+            <p className="state-title">No applications found</p>
+
+            {query && (
+              <p className="state-description">
+                No matches for "{query}"
+              </p>
+            )}
+          </div>
+        ) : (
+          filteredApps.map((app, index) => (
             <p
               key={app.name}
               ref={index === selectedIndex ? selectedRef : null}
               className={`result ${index === selectedIndex ? "selected" : ""}`}
-
               onMouseEnter={() => setSelectedIndex(index)}
               onClick={() => launchApp(app)}
-          >
-            <div className="result-info">
-              {/* app icon */}
-              <ApplicationIcon app={app} />
+            >
+              <div className="result-info">
+                {/*app icon*/}
+                <ApplicationIcon app={app} />
+                {/*app name*/}
+                <span>{app.name}</span>
+              </div>
 
-              {/* app name */}
-              <span>{app.name}</span>
-            </div>
-
-            {/*return icon*/}
-            {index === selectedIndex && (
-              <CornerDownLeft size={16} strokeWidth={3} />
-            )}
+              {/*return icon*/}
+              {index === selectedIndex && (
+                <CornerDownLeft size={16} strokeWidth={3} />
+              )}
             </p>
-          ))}
+          ))
+        )}
       </div>
 
       {/*footer*/}
