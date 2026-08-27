@@ -4,7 +4,20 @@
 
 # owl
 
-### an app launcher for now
+### a launcher?
+
+<p>
+  <a href="https://github.com/Vignesh-Venkatesh/owl/releases">
+    <img
+      src="https://img.shields.io/github/v/tag/Vignesh-Venkatesh/owl?include_prereleases&sort=semver&style=flat-square"
+      alt="Version"
+    />
+  </a>
+  <img
+    src="https://img.shields.io/badge/platform-Linux-blue?style=flat-square"
+    alt="Platform"
+  />
+</p>
 
 [Features](#features) • [Install](#install) • [Usage](#usage) • [Development](#development) • [Roadmap](#roadmap)
 
@@ -26,11 +39,15 @@ It's early, small, and currently built around Linux. The goal is to keep the lau
 
 ## Features
 
-- **Quick access** — open owl from anywhere with a global shortcut.
-- **Application search** — search through installed desktop applications as you type.
-- **Keyboard first** — navigate results and launch apps without touching the mouse.
-- **Stays out of the way** — launch something or press `Esc` and owl disappears.
-- **Lightweight** — built with Tauri, Rust, React, and TypeScript.
+* **Quick access** - open owl from anywhere with a global shortcut.
+* **Application search** - search through installed desktop applications as you type.
+* **Command palette** - type `!` to browse and activate built in commands.
+* **Calculator** - use `!calc`, `!cal`, `!calculator`, or `!math` to evaluate expressions.
+* **Instant calculations** - type expressions such as `2+2` directly without entering command mode.
+* **Copy results** - press `Enter` on a calculator result to copy it to the clipboard.
+* **Keyboard first** - navigate results, activate commands, and launch apps without touching the mouse.
+* **Stays out of the way** - launch something or press `Esc` and owl disappears.
+* **Lightweight** - built with Tauri, Rust, React, and TypeScript.
 
 ## Usage
 
@@ -40,15 +57,57 @@ Press:
 Ctrl + Alt + Space
 ```
 
-Start typing the name of an application.
+Start typing the name of an application:
+
+```text
+firefox
+```
+
+Or type `!` to open the command picker:
+
+```text
+!
+```
+
+### Calculator
+
+Activate the calculator with:
+
+```text
+!calc
+```
+
+Aliases also work:
+
+```text
+!cal
+!calculator
+!math
+```
+
+Press `Space` after an exact command name or alias to activate it immediately:
+
+```text
+!calc 2*(3+4)
+```
+
+You can also calculate directly from normal search:
+
+```text
+2+2
+```
+
+Press `Enter` on a valid calculator result to copy it to the clipboard.
+
+### Keyboard shortcuts
 
 ```text
 Ctrl + Alt + Space      Open / hide owl
 ↑ / ↓                   Navigate results
-Enter                   Launch selected app
-Esc                     Hide owl
+Enter                   Launch app / activate command / copy calculator result
+Space                   Activate an exact command from the command picker
+Esc                     Exit command mode / hide owl
 ```
-
 
 ## Install
 
@@ -59,17 +118,17 @@ Download the latest version from the [Releases](../../releases) page.
 
 Linux builds are available as:
 
-- `.AppImage`
-- `.deb`
-- `.rpm`
+* `.AppImage`
+* `.deb`
+* `.rpm`
 
 ## Development
 
 You'll need:
 
-- [Bun](https://bun.sh/)
-- [Rust](https://www.rust-lang.org/)
-- [Tauri's system dependencies](https://v2.tauri.app/start/prerequisites/)
+* [Bun](https://bun.sh/)
+* [Rust](https://www.rust-lang.org/)
+* [Tauri's system dependencies](https://v2.tauri.app/start/prerequisites/)
 
 Clone the repository:
 
@@ -98,11 +157,13 @@ bun run tauri build
 
 ## Known issues
 
-This is `v0.1.0`. Things will be rough around the edges.
+This is `v0.2.0`. Things will still be rough around the edges.
 
-- Some terminal applications may not launch correctly.
-- owl has only been tested on Linux so far.
-- Application discovery currently follows Linux desktop entry conventions.
+* Footer shortcuts don't yet update when entering command mode.
+* Calculator copy actions don't currently show a success notification.
+* Some terminal applications may not launch correctly.
+* owl has only been tested on Linux so far.
+* Application discovery currently follows Linux desktop entry conventions.
 
 If you find something broken, opening an issue is appreciated.
 
@@ -110,13 +171,14 @@ If you find something broken, opening an issue is appreciated.
 
 No promises, but these are some things I'd like to explore:
 
-- Better search and ranking
-- Terminal application support
-- Calculator
-- File search
-- Commands
-- Settings
-- Plugins
+* Better search and ranking
+* More built in commands
+* File search
+* Emoji search
+* Web search
+* Terminal application support
+* Settings
+* Plugins
 
 ## Built with
 
@@ -130,6 +192,6 @@ No promises, but these are some things I'd like to explore:
 
 <div align="center">
 
-**owl**. An app launcher for now.
+**owl**. A launcher?
 
 </div>
