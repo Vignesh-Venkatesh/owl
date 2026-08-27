@@ -28,11 +28,19 @@ export function calculate(expression: string): ResultItem[] {
   try {
     const value = parser.evaluate(trimmedExpression)
 
-    // only containing finite numeric values
+    // values like Infinity and NaN are calculation errors
+    // ex: 1/0
     if (typeof value !== "number" || !Number.isFinite(value)) {
-      return []
+      return [
+        {
+          type: "calc",
+          id: `calc:${trimmedExpression}`,
+          expression: trimmedExpression,
+          value: null,
+          status: "error",
+        },
+      ]
     }
-
 
     return [
       {
@@ -40,11 +48,21 @@ export function calculate(expression: string): ResultItem[] {
         id: `calc:${trimmedExpression}`,
         expression: trimmedExpression,
         value: String(value),
+        status: "valid",
       },
     ]
   } catch {
-    // since an incomplete input such as "2 *" is normal while typing, we don't give an error
-    return []
+    // parser errors are treated as pending while the user is typing
+    // ex: "12*" may be waiting for the next number
+    return [
+      {
+        type: "calc",
+        id: `calc:${trimmedExpression}`,
+        expression: trimmedExpression,
+        value: null,
+        status: "pending",
+      },
+    ]
   }
 }
 

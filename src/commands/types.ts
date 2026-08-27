@@ -39,7 +39,8 @@ export type ResultItem =
       type: "calc"
       id: string
       expression: string
-      value: string
+      value: string | null
+      status: "valid" | "pending" | "error"
     }
 
 
