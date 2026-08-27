@@ -7,14 +7,17 @@
 ### a launcher?
 
 <p>
-  <a href="https://github.com/Vignesh-Venkatesh/owl/releases">
+    <a href="https://github.com/Vignesh-Venkatesh/owl/releases">
+        <img src="https://img.shields.io/github/v/release/Vignesh-Venkatesh/owl?style=for-the-badge&labelColor=161B22&color=E8A33D" alt="Release">
+    </a>
+  <!--<a href="https://github.com/Vignesh-Venkatesh/owl/releases">
     <img
       src="https://img.shields.io/github/v/tag/Vignesh-Venkatesh/owl?include_prereleases&sort=semver&style=flat-square"
       alt="Version"
     />
-  </a>
+  </a>-->
   <img
-    src="https://img.shields.io/badge/platform-Linux-blue?style=flat-square"
+    src="https://img.shields.io/badge/platform-Linux-3B82F6?style=for-the-badge&labelColor=161B22"
     alt="Platform"
   />
 </p>
