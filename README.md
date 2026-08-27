@@ -33,7 +33,8 @@ It's early, small, and currently built around Linux. The goal is to keep the lau
 
 
 <p align="center">
-  <img src="./assets/preview.png" alt="owl preview">
+  <img src="./assets/owl-v0.2.0-1.png" alt="owl preview">
+  <img src="./assets/owl-v0.2.0-2.png" alt="owl calculator preview">
 </p>
 
 
