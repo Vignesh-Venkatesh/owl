@@ -9,6 +9,7 @@ import type { AppEntry } from "./types"
 
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import { invoke } from "@tauri-apps/api/core"
+import { writeText } from "@tauri-apps/plugin-clipboard-manager"
 
 // components
 import SearchBar from "./components/SearchBar"
@@ -159,6 +160,16 @@ function App() {
       if (selectedResult.type === "app") {
         await launchApp(selectedResult.app)
         return
+      }
+
+      // valid calculator results are copied to the clipboard
+      if (selectedResult.type === "calc" && selectedResult.status === "valid" && selectedResult.value !== null) {
+        try {
+          await writeText(selectedResult.value)
+        } catch (err) {
+          console.error("failed ot copy calculator result:", error)
+          setError("failed to copy result")
+        }
       }
 
       // command results activate the selected command
