@@ -12,7 +12,7 @@ import { invoke } from "@tauri-apps/api/core"
 import { writeText } from "@tauri-apps/plugin-clipboard-manager"
 
 // components
-import SearchBar from "./components/SearchBar"
+import SearchBar from "./components/search-bar/SearchBar"
 import ResultArea from "./components/results/ResultArea"
 import Footer from "./components/Footer"
 
@@ -203,6 +203,7 @@ function App() {
         resultCount={results.length}
         onQueryChange={handleQueryChange}
         onKeyDown={handleKeyDown}
+        carouselActive={mode.kind === "search" && inputValue === ""}
       />
 
       {/* result area */}

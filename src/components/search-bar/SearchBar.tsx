@@ -1,0 +1,69 @@
+import type { KeyboardEvent } from "react"
+
+// icons import
+// import { Search } from "lucide-react"
+
+// components import
+import Kbd from "../Kbd"
+import { useSearchPlaceholder } from "./useSearchPlaceholder"
+
+type SearchBarProps = {
+  query: string
+  resultCount: number
+  onQueryChange: (value: string) => void
+  onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void
+  carouselActive: boolean
+}
+
+
+function SearchBar({ query, resultCount, onQueryChange, onKeyDown, carouselActive }: SearchBarProps) {
+  const { placeholder, visible } = useSearchPlaceholder(carouselActive)
+
+  return (
+    <div className="flex items-center gap-3 border-b border-border px-4 py-4">
+      {/*icon*/}
+      {/*<div className="text-accent">
+        <Search size={19} strokeWidth={2.5} />
+      </div>*/}
+
+      {/* input */}
+      <div className="relative w-full">
+        {/*placeholder active*/}
+        {/*displayed when user is not typing*/}
+        {carouselActive && (
+          <span
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-y-0 left-0 flex items-center text-[15px] text-muted/60 transition-opacity duration-500 motion-reduce:transition-none ${
+              visible ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {placeholder}
+          </span>
+        )}
+
+        {/*displayed when user typing*/}
+        <input
+          type="text"
+          value={query}
+          onChange={(event) => onQueryChange(event.target.value)}
+          onKeyDown={onKeyDown}
+          autoFocus
+          aria-label="Search"
+          className="relative w-full bg-transparent text-[15px] text-text caret-accent focus:outline-none"
+        />
+      </div>
+
+      {/*result count*/}
+      <Kbd
+        size="sm"
+        className={`shrink-0 text-muted transition-opacity ${
+          query ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        {resultCount}
+      </Kbd>
+    </div>
+  )
+}
+
+export default SearchBar
