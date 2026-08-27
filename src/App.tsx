@@ -2,6 +2,7 @@ import "./App.css"
 
 import { useEffect, useRef, useState } from "react"
 import { useInputMode } from "./input/useInputMode"
+import { useToast } from "./components/toast/ToastProvider"
 
 import type { KeyboardEvent } from "react"
 
@@ -21,6 +22,8 @@ import { calculate, calculatorCommand } from "./commands/providers/calculator"
 import { commandRegistry } from "./commands"
 
 function App() {
+  const toast = useToast()
+
   // complete application index returned by rust backend
   const [apps, setApps] = useState<AppEntry[]>([])
 
@@ -162,14 +165,20 @@ function App() {
         return
       }
 
-      // valid calculator results are copied to the clipboard
-      if (selectedResult.type === "calc" && selectedResult.status === "valid" && selectedResult.value !== null) {
+      // valid calculator results are copied to the clipboard and appropriate toasts shown
+      if (selectedResult.type === "calc") {
+        if (selectedResult.status != "valid" || selectedResult.value === null) {
+          toast.error("nothing to copy")
+          return
+        }
         try {
           await writeText(selectedResult.value)
+          toast.success(`copied ${selectedResult.value}`)
         } catch (err) {
-          console.error("failed ot copy calculator result:", error)
-          setError("failed to copy result")
+          console.error("failed to copy calculator result:", err)
+          toast.error("failed to copy")
         }
+        return
       }
 
       // command results activate the selected command
