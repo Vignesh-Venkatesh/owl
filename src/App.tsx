@@ -146,41 +146,45 @@ function App() {
 
   // keyboard handler
   async function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    // arrow down key is pressed
     if (event.key === "ArrowDown") {
       event.preventDefault()
-
       if (results.length === 0) {
         return
       }
-
       setSelectedIndex((currentIndex) =>
         Math.min(currentIndex + 1, results.length - 1)
       )
-
       return
     }
 
+    // arrow up key is pressed
     if (event.key === "ArrowUp") {
       event.preventDefault()
-
       if (results.length === 0) {
         return
       }
-
       setSelectedIndex((currentIndex) => Math.max(currentIndex - 1, 0))
-
       return
     }
 
+    // Tab is pressed
+    if (event.key === "Tab") {
+      if (mode.kind === "command-active" && mode.command.id === "uuid") {
+        event.preventDefault()
+        setActivationResults(mode.command.handler(""))
+        return
+      }
+    }
+
+
+    // Enter is pressed
     if (event.key === "Enter") {
       event.preventDefault()
-
       const selectedResult = results[selectedIndex]
-
       if (!selectedResult) {
         return
       }
-
       // app results launch applications
       if (selectedResult.type === "app") {
         await launchApp(selectedResult.app)
@@ -223,16 +227,15 @@ function App() {
       }
     }
 
+    // Esc is pressed
     if (event.key === "Escape") {
       event.preventDefault()
-
       // escape from command modes returns to normal search
       if (mode.kind !== "search") {
         resetInput()
         setSelectedIndex(0)
         return
       }
-
       // escape from normal search hides owl
       await hideWindow()
     }
