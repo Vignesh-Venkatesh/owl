@@ -5,7 +5,7 @@ import type { ResultItem } from "../types";
 function createAppResult(app: AppEntry): ResultItem{
   return {
     type: "app",
-    id: `app:${app.exec}`,
+    id: `app:${app.name}`,
     app,
   }
 }

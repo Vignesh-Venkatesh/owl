@@ -2,12 +2,13 @@ import type { RefObject } from "react"
 
 // types
 import type { AppEntry } from "../../types"
-import type { ResultItem } from "../../commands/types"
+import type { InputMode, ResultItem } from "../../commands/types"
 
-// components
+// results
 import { rendererMap } from "./rendererMap"
 
 type ResultAreaProps = {
+  mode: InputMode
   results: ResultItem[]
   query: string
   error: string | null
@@ -17,7 +18,27 @@ type ResultAreaProps = {
   selectedRef: RefObject<HTMLParagraphElement | null>
 }
 
-function ResultArea({results,query,error,selectedIndex,onSelect,launchApp,selectedRef}: ResultAreaProps) {
+function ResultArea({mode, results, query, error, selectedIndex, onSelect, launchApp, selectedRef}: ResultAreaProps) {
+  // command picker has its own renderer and empty state
+  if (mode.kind === "command-picker") {
+    const commandResults = results.filter(
+      (result): result is Extract<ResultItem, { type: "command" }> =>
+        result.type === "command"
+    )
+
+    const Renderer = rendererMap.command
+
+    return (
+      <Renderer
+        results={commandResults}
+        selectedIndex={selectedIndex}
+        onSelect={onSelect}
+        selectedRef={selectedRef}
+      />
+    )
+  }
+
+  // normal search currently only produces app results
   const appResults = results.filter(
     (result): result is Extract<ResultItem, { type: "app" }> =>
       result.type === "app"

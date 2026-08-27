@@ -1,6 +1,8 @@
 import "./App.css"
 
 import { useEffect, useRef, useState } from "react"
+import { useInputMode } from "./input/useInputMode"
+
 import type { KeyboardEvent } from "react"
 
 import type { AppEntry } from "./types"
@@ -14,13 +16,14 @@ import ResultArea from "./components/results/ResultArea"
 import Footer from "./components/Footer"
 
 import { searchApps } from "./commands/providers/apps"
+import { commandRegistry } from "./commands"
 
 function App() {
   // complete application index returned by rust backend
   const [apps, setApps] = useState<AppEntry[]>([])
 
-  // whatever the user has currently typed in the launcher
-  const [query, setQuery] = useState("")
+  // controls whether owl is searching apps, picking a command or running an active command
+  const {mode, updateInput, inputValue, resetInput} = useInputMode()
 
   // index of the currently highlighted result
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -35,7 +38,7 @@ function App() {
     selectedRef.current?.scrollIntoView({
       block: "nearest",
     })
-  }, [selectedIndex, query])
+  }, [selectedIndex, inputValue])
 
   // loading application list
   useEffect(() => {
@@ -52,13 +55,22 @@ function App() {
   }, [])
 
   // searching happens entirely in the frontend... for now...
-  // results returned by the active search provider
-  const results = searchApps(apps, query)
+  // normal search mode uses the app search provider
+  const results =
+    mode.kind === "search"
+      ? searchApps(apps, mode.query)
+      : mode.kind === "command-picker"
+        ? commandRegistry.search(mode.filter).map((command) => ({
+            type: "command" as const,
+            id: `command:${command.id}`,
+            command,
+          }))
+        : []
 
   // function to handle query changes
   function handleQueryChange(value: string) {
     setError(null)
-    setQuery(value)
+    updateInput(value)
     setSelectedIndex(0)
   }
 
@@ -136,6 +148,15 @@ function App() {
 
     if (event.key === "Escape") {
       event.preventDefault()
+
+      // escape from command modes returns to normal search
+      if (mode.kind !== "search") {
+        resetInput()
+        setSelectedIndex(0)
+        return
+      }
+
+      // escape from normal search hides owl
       await hideWindow()
     }
   }
@@ -144,7 +165,7 @@ function App() {
     <div className="flex h-screen w-screen flex-col overflow-hidden rounded-xl border border-border bg-bg text-text">
       {/* search bar */}
       <SearchBar
-        query={query}
+        query={inputValue}
         resultCount={results.length}
         onQueryChange={handleQueryChange}
         onKeyDown={handleKeyDown}
@@ -152,8 +173,9 @@ function App() {
 
       {/* result area */}
       <ResultArea
+        mode={mode}
         results={results}
-        query={query}
+        query={inputValue}
         error={error}
         selectedIndex={selectedIndex}
         onSelect={setSelectedIndex}
