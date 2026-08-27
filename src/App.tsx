@@ -16,6 +16,7 @@ import ResultArea from "./components/results/ResultArea"
 import Footer from "./components/Footer"
 
 import { searchApps } from "./commands/providers/apps"
+import { calculate, calculatorCommand } from "./commands/providers/calculator"
 import { commandRegistry } from "./commands"
 
 function App() {
@@ -23,7 +24,7 @@ function App() {
   const [apps, setApps] = useState<AppEntry[]>([])
 
   // controls whether owl is searching apps, picking a command or running an active command
-  const {mode, updateInput, inputValue, resetInput} = useInputMode()
+  const {mode, updateInput, inputValue, resetInput, activateCommand} = useInputMode()
 
   // index of the currently highlighted result
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -58,14 +59,18 @@ function App() {
   // normal search mode uses the app search provider
   const results =
     mode.kind === "search"
-      ? searchApps(apps, mode.query)
+      ? calculatorCommand.passiveMatch?.(mode.query)
+        ? calculate(mode.query)
+        : searchApps(apps, mode.query)
       : mode.kind === "command-picker"
         ? commandRegistry.search(mode.filter).map((command) => ({
             type: "command" as const,
             id: `command:${command.id}`,
             command,
           }))
-        : []
+        : mode.command.id === "calc"
+          ? calculate(mode.query)
+          : []
 
   // function to handle query changes
   function handleQueryChange(value: string) {
@@ -139,11 +144,17 @@ function App() {
       }
 
       // app results launch applications
-      if (selectedResult.type == "app") {
+      if (selectedResult.type === "app") {
         await launchApp(selectedResult.app)
+        return
       }
 
-      return
+      // command results activate the selected command
+      if (selectedResult.type === "command") {
+        activateCommand(selectedResult.command)
+        setSelectedIndex(0)
+        return
+      }
     }
 
     if (event.key === "Escape") {
@@ -179,6 +190,7 @@ function App() {
         error={error}
         selectedIndex={selectedIndex}
         onSelect={setSelectedIndex}
+        onActivateCommand={activateCommand}
         launchApp={launchApp}
         selectedRef={selectedRef}
       />

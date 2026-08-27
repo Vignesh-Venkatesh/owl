@@ -2,7 +2,7 @@ import type { RefObject } from "react"
 
 // types
 import type { AppEntry } from "../../types"
-import type { InputMode, ResultItem } from "../../commands/types"
+import type { InputMode, ResultItem, Command } from "../../commands/types"
 
 // results
 import { rendererMap } from "./rendererMap"
@@ -14,11 +14,12 @@ type ResultAreaProps = {
   error: string | null
   selectedIndex: number
   onSelect: (index: number) => void
+  onActivateCommand: (command: Command) => void
   launchApp: (app: AppEntry) => Promise<void>
   selectedRef: RefObject<HTMLParagraphElement | null>
 }
 
-function ResultArea({mode, results, query, error, selectedIndex, onSelect, launchApp, selectedRef}: ResultAreaProps) {
+function ResultArea({mode, results, query, error, selectedIndex, onSelect, onActivateCommand, launchApp, selectedRef}: ResultAreaProps) {
   // command picker has its own renderer and empty state
   if (mode.kind === "command-picker") {
     const commandResults = results.filter(
@@ -33,7 +34,38 @@ function ResultArea({mode, results, query, error, selectedIndex, onSelect, launc
         results={commandResults}
         selectedIndex={selectedIndex}
         onSelect={onSelect}
+        onActivate={onActivateCommand}
         selectedRef={selectedRef}
+      />
+    )
+  }
+
+  // active commands wait for command-specific input/results
+  if (mode.kind === "command-active") {
+    if (mode.command.id === "calc") {
+      const calcResults = results.filter(
+        (result): result is Extract<ResultItem, {type: "calc"}> =>
+          result.type === "calc"
+      )
+      const Renderer = rendererMap.calc
+      return (
+        <Renderer
+          results={calcResults}
+        />
+      )
+    }
+  }
+
+  // passive calculator results can appear while still in normal search mode
+  const calcResults = results.filter(
+    (result): result is Extract<ResultItem, {type: "calc"}> =>
+      result.type === "calc"
+  )
+  if (calcResults.length>0) {
+    const Renderer = rendererMap.calc
+    return (
+      <Renderer
+        results={calcResults}
       />
     )
   }

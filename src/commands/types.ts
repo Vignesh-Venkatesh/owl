@@ -20,6 +20,7 @@ export interface Command {
   description: string
   category: CommandCategory
   mode: CommandMode
+  passiveMatch?: (query: string) => boolean
 }
 
 
@@ -33,6 +34,12 @@ export type ResultItem =
       type: "command"
       id: string
       command: Command
+    }
+  | {
+      type: "calc"
+      id: string
+      expression: string
+      value: string
     }
 
 

@@ -7,7 +7,7 @@ import { CornerDownLeft } from "lucide-react"
 import Kbd from "../Kbd"
 
 // types
-import type { ResultItem } from "../../commands/types"
+import type { ResultItem, Command } from "../../commands/types"
 
 type CommandResult = Extract<ResultItem, { type: "command" }>
 
@@ -15,10 +15,11 @@ type CommandResultsProps = {
   results: CommandResult[]
   selectedIndex: number
   onSelect: (index: number) => void
+  onActivate: (command: Command) => void
   selectedRef: RefObject<HTMLParagraphElement | null>
 }
 
-function CommandResults({results, selectedIndex, onSelect, selectedRef}: CommandResultsProps) {
+function CommandResults({results, selectedIndex, onSelect, onActivate, selectedRef}: CommandResultsProps) {
   // no registered commands match the current picker filter
   if (results.length === 0) {
     return (
@@ -41,6 +42,7 @@ function CommandResults({results, selectedIndex, onSelect, selectedRef}: Command
             key={result.id}
             ref={index === selectedIndex ? selectedRef : null}
             onMouseEnter={() => onSelect(index)}
+            onClick={() => onActivate(command)}
             className={`group relative flex cursor-default items-center justify-between gap-3 rounded py-2 pl-3 pr-2.5 transition-colors ${
               index === selectedIndex
                 ? "bg-accent/30 font-semibold"
@@ -52,11 +54,11 @@ function CommandResults({results, selectedIndex, onSelect, selectedRef}: Command
             )}
 
             <div className="flex min-w-0 flex-col">
-              <span className="truncate text-[13.5px] text-text">
+              <span className="truncate text-[13.5px] text-text/90">
                 {command.name}
               </span>
 
-              <span className="truncate text-xs text-muted">
+              <span className="truncate text-xs text-muted font-medium">
                 {command.description}
               </span>
             </div>
