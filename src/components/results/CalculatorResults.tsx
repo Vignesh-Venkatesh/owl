@@ -54,7 +54,7 @@ function CalculatorResults({ results }: CalculatorResultProps) {
           {result.expression}
         </p>
 
-        <p className="mt-1 text-lg font-semibold text-text">
+        <p key={result.id} className="mt-1 text-4xl font-semibold text-text/90 text-end animate-calc-pop">
           {displayValue}
         </p>
       </div>

@@ -50,3 +50,11 @@
 body {
   font-family: "JetBrains Mono", monospace;
 }
+
+@keyframes calc-pop {
+  from { opacity: 0.4; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-calc-pop {
+  animation: calc-pop 120ms ease-out;
+}
