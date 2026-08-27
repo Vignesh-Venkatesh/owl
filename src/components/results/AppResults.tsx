@@ -14,8 +14,10 @@ import Kbd from "../Kbd"
 import type { AppEntry } from "../../types"
 import type { ResultItem } from "../../commands/types"
 
+type AppResult = Extract<ResultItem, { type: "app" }>
+
 type AppResultsProp = {
-  results: ResultItem[]
+  results: AppResult[]
   query: string
   error: string | null
   selectedIndex: number

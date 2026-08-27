@@ -126,7 +126,10 @@ function App() {
         return
       }
 
-      await launchApp(selectedResult.app)
+      // app results launch applications
+      if (selectedResult.type == "app") {
+        await launchApp(selectedResult.app)
+      }
 
       return
     }

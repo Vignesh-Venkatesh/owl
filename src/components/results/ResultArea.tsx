@@ -18,12 +18,16 @@ type ResultAreaProps = {
 }
 
 function ResultArea({results,query,error,selectedIndex,onSelect,launchApp,selectedRef}: ResultAreaProps) {
-  const resultType = results[0]?.type ?? "app"
-  const Renderer = rendererMap[resultType]
+  const appResults = results.filter(
+    (result): result is Extract<ResultItem, { type: "app" }> =>
+      result.type === "app"
+  )
+
+  const Renderer = rendererMap.app
 
   return (
     <Renderer
-      results={results}
+      results={appResults}
       query={query}
       error={error}
       selectedIndex={selectedIndex}

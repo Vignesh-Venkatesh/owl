@@ -85,6 +85,56 @@ export class CommandRegistry {
     return this.byId.get(commandID)
   }
 
+  // searches commands using their name and aliases
+  // exact and prefix matches are ranked before partial matches
+  search(filter: string): Command[] {
+    const normalizedFilter = normalize(filter)
+
+    // when there is no filter, returning every registered command
+    if (!normalizedFilter) {
+      return this.getAll()
+    }
+
+    return this.getAll()
+      .map((command) => {
+        const values = [
+          command.name,
+          ...command.aliases,
+        ].map(normalize)
+
+        let score = 0
+
+        for (const value of values) {
+          // exact match gets the highest score
+          if (value === normalizedFilter) {
+            score = Math.max(score, 3)
+            continue
+          }
+
+          // prefix match comes next
+          if (value.startsWith(normalizedFilter)) {
+            score = Math.max(score, 2)
+            continue
+          }
+
+          // partial match gets the lowest score
+          if (value.includes(normalizedFilter)) {
+            score = Math.max(score, 1)
+          }
+        }
+
+        return {
+          command,
+          score,
+        }
+      })
+      // removing commands that did not match
+      .filter((result) => result.score > 0)
+      // best matches appear first
+      .sort((a, b) => b.score - a.score)
+      .map((result) => result.command)
+  }
+
   // all commands currently registered
   getAll(): Command[]{
     return Array.from(this.byId.values())

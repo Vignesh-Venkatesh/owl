@@ -29,3 +29,28 @@ export type ResultItem =
       id: string
       app: AppEntry
     }
+  | {
+      type: "command"
+      id: string
+      command: Command
+    }
+
+
+// represents what the search input is currently doing
+// search: normal owl app search
+// command-picker: user has started typing "!" but has not selected a command yet
+// command-active: a specific command has been selected and now owns the input
+export type InputMode =
+  | {
+      kind: "search"
+      query : string
+    }
+  | {
+      kind: "command-picker"
+      filter : string
+    }
+  | {
+      kind: "command-active"
+      command : Command
+      query : string
+    }
