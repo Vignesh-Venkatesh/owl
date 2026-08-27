@@ -15,11 +15,12 @@ export function useInputMode() {
   })
 
   // activates a command selected from the command picker
-  function activateCommand(command: Command) {
+  function activateCommand(command: Command, invocation=command.id) {
     setMode({
       kind: "command-active",
       command,
       query: "",
+      invocation,
     })
   }
 
@@ -28,13 +29,14 @@ export function useInputMode() {
 
     // if a command is already active, keeping it active while the input still begins with that command's prefix
     if (mode.kind === "command-active") {
-      const commandPrefix = `!${mode.command.id} `
+      const commandPrefix = `!${mode.invocation} `
 
       if (value.startsWith(commandPrefix)) {
         setMode({
           kind: "command-active",
           command: mode.command,
           query: value.slice(commandPrefix.length),
+          invocation: mode.invocation
         })
 
         return
@@ -76,7 +78,7 @@ export function useInputMode() {
       return `!${mode.filter}`
     }
 
-    return `!${mode.command.id} ${mode.query}`
+    return `!${mode.invocation} ${mode.query}`
   }
 
   return {mode, updateInput, activateCommand, resetInput, inputValue: getInputValue()}

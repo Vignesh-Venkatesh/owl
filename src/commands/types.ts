@@ -60,5 +60,6 @@ export type InputMode =
   | {
       kind: "command-active"
       command : Command
-      query : string
+      query: string
+      invocation: string
     }

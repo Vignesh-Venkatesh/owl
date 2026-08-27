@@ -75,6 +75,18 @@ function App() {
   // function to handle query changes
   function handleQueryChange(value: string) {
     setError(null)
+
+    // pressing space after an exact command name, id or alias activates that command without pressing Enter
+    if (mode.kind === "command-picker" && value.startsWith("!") && value.endsWith(" ")) {
+      const commandName = value.slice(1, -1)
+      const command = commandRegistry.getByNameOrAlias(commandName) // getting command name if it exists in registry
+      if (command) {
+        activateCommand(command, commandName)
+        setSelectedIndex(0)
+        return
+      }
+    }
+
     updateInput(value)
     setSelectedIndex(0)
   }
