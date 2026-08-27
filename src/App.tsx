@@ -1,24 +1,31 @@
 import "./App.css"
 
 import { useEffect, useRef, useState } from "react"
+import { useInputMode } from "./input/useInputMode"
+
 import type { KeyboardEvent } from "react"
 
 import type { AppEntry } from "./types"
 
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import { invoke } from "@tauri-apps/api/core"
+import { writeText } from "@tauri-apps/plugin-clipboard-manager"
 
 // components
 import SearchBar from "./components/SearchBar"
 import ResultArea from "./components/results/ResultArea"
 import Footer from "./components/Footer"
 
+import { searchApps } from "./commands/providers/apps"
+import { calculate, calculatorCommand } from "./commands/providers/calculator"
+import { commandRegistry } from "./commands"
+
 function App() {
   // complete application index returned by rust backend
   const [apps, setApps] = useState<AppEntry[]>([])
 
-  // whatever the user has currently typed in the launcher
-  const [query, setQuery] = useState("")
+  // controls whether owl is searching apps, picking a command or running an active command
+  const {mode, updateInput, inputValue, resetInput, activateCommand} = useInputMode()
 
   // index of the currently highlighted result
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -33,7 +40,7 @@ function App() {
     selectedRef.current?.scrollIntoView({
       block: "nearest",
     })
-  }, [selectedIndex, query])
+  }, [selectedIndex, inputValue])
 
   // loading application list
   useEffect(() => {
@@ -50,17 +57,38 @@ function App() {
   }, [])
 
   // searching happens entirely in the frontend... for now...
-  const normalizedQuery = query.toLowerCase()
-
-  const filteredApps = apps.filter((app) => {
-    const normalizedName = app.name.toLowerCase()
-    return normalizedName.includes(normalizedQuery)
-  })
+  // normal search mode uses the app search provider
+  const results =
+    mode.kind === "search"
+      ? calculatorCommand.passiveMatch?.(mode.query)
+        ? calculate(mode.query)
+        : searchApps(apps, mode.query)
+      : mode.kind === "command-picker"
+        ? commandRegistry.search(mode.filter).map((command) => ({
+            type: "command" as const,
+            id: `command:${command.id}`,
+            command,
+          }))
+        : mode.command.id === "calc"
+          ? calculate(mode.query)
+          : []
 
   // function to handle query changes
   function handleQueryChange(value: string) {
     setError(null)
-    setQuery(value)
+
+    // pressing space after an exact command name, id or alias activates that command without pressing Enter
+    if (mode.kind === "command-picker" && value.startsWith("!") && value.endsWith(" ")) {
+      const commandName = value.slice(1, -1)
+      const command = commandRegistry.getByNameOrAlias(commandName) // getting command name if it exists in registry
+      if (command) {
+        activateCommand(command, commandName)
+        setSelectedIndex(0)
+        return
+      }
+    }
+
+    updateInput(value)
     setSelectedIndex(0)
   }
 
@@ -96,12 +124,12 @@ function App() {
     if (event.key === "ArrowDown") {
       event.preventDefault()
 
-      if (filteredApps.length === 0) {
+      if (results.length === 0) {
         return
       }
 
       setSelectedIndex((currentIndex) =>
-        Math.min(currentIndex + 1, filteredApps.length - 1)
+        Math.min(currentIndex + 1, results.length - 1)
       )
 
       return
@@ -110,13 +138,11 @@ function App() {
     if (event.key === "ArrowUp") {
       event.preventDefault()
 
-      if (filteredApps.length === 0) {
+      if (results.length === 0) {
         return
       }
 
-      setSelectedIndex((currentIndex) =>
-        Math.max(currentIndex - 1, 0)
-      )
+      setSelectedIndex((currentIndex) => Math.max(currentIndex - 1, 0))
 
       return
     }
@@ -124,19 +150,47 @@ function App() {
     if (event.key === "Enter") {
       event.preventDefault()
 
-      const selectedApp = filteredApps[selectedIndex]
+      const selectedResult = results[selectedIndex]
 
-      if (!selectedApp) {
+      if (!selectedResult) {
         return
       }
 
-      await launchApp(selectedApp)
+      // app results launch applications
+      if (selectedResult.type === "app") {
+        await launchApp(selectedResult.app)
+        return
+      }
 
-      return
+      // valid calculator results are copied to the clipboard
+      if (selectedResult.type === "calc" && selectedResult.status === "valid" && selectedResult.value !== null) {
+        try {
+          await writeText(selectedResult.value)
+        } catch (err) {
+          console.error("failed ot copy calculator result:", error)
+          setError("failed to copy result")
+        }
+      }
+
+      // command results activate the selected command
+      if (selectedResult.type === "command") {
+        activateCommand(selectedResult.command)
+        setSelectedIndex(0)
+        return
+      }
     }
 
     if (event.key === "Escape") {
       event.preventDefault()
+
+      // escape from command modes returns to normal search
+      if (mode.kind !== "search") {
+        resetInput()
+        setSelectedIndex(0)
+        return
+      }
+
+      // escape from normal search hides owl
       await hideWindow()
     }
   }
@@ -145,26 +199,27 @@ function App() {
     <div className="flex h-screen w-screen flex-col overflow-hidden rounded-xl border border-border bg-bg text-text">
       {/* search bar */}
       <SearchBar
-        query={query}
-        resultCount={filteredApps.length}
+        query={inputValue}
+        resultCount={results.length}
         onQueryChange={handleQueryChange}
         onKeyDown={handleKeyDown}
       />
 
       {/* result area */}
       <ResultArea
-        mode="apps"
-        apps={filteredApps}
-        query={query}
+        mode={mode}
+        results={results}
+        query={inputValue}
         error={error}
         selectedIndex={selectedIndex}
         onSelect={setSelectedIndex}
+        onActivateCommand={activateCommand}
         launchApp={launchApp}
         selectedRef={selectedRef}
       />
 
       {/* footer */}
-      <Footer resultCount={filteredApps.length} />
+      <Footer resultCount={results.length} />
     </div>
   )
 }

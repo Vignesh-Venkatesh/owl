@@ -71,6 +71,7 @@ fn launch_app(exec: String, terminal: bool) -> Result<(), String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_clipboard_manager::init())
         // install global shortcut plugin
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()

@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.2.0]
+
+A command focused release introducing owl's first command system and built in calculator.
+
+### Added
+
+* Command registry and unified result system for built in commands.
+* Command picker activated with a leading `!`.
+* Calculator command available with `!calc`.
+* Calculator aliases including `!calculator` and `!math`.
+* Automatic command activation by pressing `Space` after an exact command name or alias.
+* Passive calculator support for expressions such as `2+2` without entering command mode.
+* Mathematical expression parsing with support for operator precedence and parentheses.
+* Clipboard support for copying valid calculator results with `Enter`.
+
+### Changed
+
+* Command aliases remain visible after activation instead of being replaced by the original command name.
+* Calculator keeps the previous valid result visible while an expression is temporarily incomplete.
+* Calculator distinguishes incomplete expressions from genuine calculation errors.
+* Added a few extra themes.
+
+### Fixed
+
+* Calculation errors such as division by zero display `Err` instead of disappearing.
+* Prevented incomplete calculator expressions from repeatedly flashing the empty calculator state.
+
+### Known Limitations
+
+* Footer doesn't change to appropriate shortcuts when entering command mode.
+* No toast notification to indicate whether a result was successfully copied.
+
+---
+
 ## [0.1.1]
 
 A visual polish release focused on improving owl's interface and introducing theme support.

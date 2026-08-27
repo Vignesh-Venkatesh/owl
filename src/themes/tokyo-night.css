@@ -1,0 +1,12 @@
+[data-theme="tokyo-night"] {
+  --t-bg: #1a1b26;
+  --t-surface: #1f2335;
+  --t-surface-2: #24283b;
+  --t-border: #3b4261;
+  --t-text: #c0caf5;
+  --t-text-dim: #a9b1d6;
+  --t-accent: #7aa2f7;
+  --t-muted: #565f89;
+  --t-danger: #f7768e;
+  --t-good: #9ece6a;
+}

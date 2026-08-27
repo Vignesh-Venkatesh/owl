@@ -1,0 +1,12 @@
+[data-theme="everforest"] {
+  --t-bg: #2d353b;
+  --t-surface: #343f44;
+  --t-surface-2: #3d484d;
+  --t-border: #4f585e;
+  --t-text: #d3c6aa;
+  --t-text-dim: #a7c080;
+  --t-accent: #a7c080;
+  --t-muted: #859289;
+  --t-danger: #e67e80;
+  --t-good: #a7c080;
+}
