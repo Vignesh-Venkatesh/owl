@@ -15,6 +15,8 @@ export type CommandRunOn =
   | "query-change"
   | "activation"
 
+export type CommandResultType = Exclude<ResultItem["type"], "app" | "command">
+
 export interface Command {
   apiVersion: 1
   id: string
@@ -26,26 +28,32 @@ export interface Command {
   passiveMatch?: (query: string) => boolean
   handler: (query: string) => ResultItem[]
   runOn: CommandRunOn
+  resultType: CommandResultType
 }
 
 
 export type ResultItem =
   | {
-      type: "app"
+      type: "app" // application
       id: string
       app: AppEntry
     }
   | {
-      type: "command"
+      type: "command" // represents a command that the user can select
       id: string
       command: Command
     }
   | {
-      type: "calc"
+      type: "calc" // calculator
       id: string
       expression: string
       value: string | null
       status: "valid" | "pending" | "error"
+    }
+  | {
+      type: "uuid" // uuid generator
+      id: string
+      value: string
     }
 
 

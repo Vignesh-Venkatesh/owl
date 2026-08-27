@@ -42,17 +42,23 @@ function ResultArea({mode, results, query, error, selectedIndex, onSelect, onAct
 
   // active commands wait for command-specific input/results
   if (mode.kind === "command-active") {
-    if (mode.command.id === "calc") {
-      const calcResults = results.filter(
-        (result): result is Extract<ResultItem, {type: "calc"}> =>
-          result.type === "calc"
+    const resultType = mode.command.resultType
+    if (resultType === "calc") {
+      const commandResults = results.filter(
+        (result): result is Extract<ResultItem, { type: "calc" }> =>
+          result.type === resultType
       )
-      const Renderer = rendererMap.calc
-      return (
-        <Renderer
-          results={calcResults}
-        />
+      const Renderer = rendererMap[resultType]
+      return <Renderer results={commandResults} />
+    }
+
+    if (resultType === "uuid") {
+      const commandResults = results.filter(
+        (result): result is Extract<ResultItem, { type: "uuid" }> =>
+          result.type === resultType
       )
+      const Renderer = rendererMap[resultType]
+      return <Renderer results={commandResults} />
     }
   }
 
