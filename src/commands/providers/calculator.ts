@@ -10,7 +10,9 @@ export const calculatorCommand: Command = {
   description: "calculate a mathematical expression",
   category: "utility",
   mode: "instant",
-  passiveMatch
+  passiveMatch,
+  handler: calculate,
+  runOn: "query-change",
 }
 
 const parser = new Parser()

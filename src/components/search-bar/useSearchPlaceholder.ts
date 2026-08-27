@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
 const PLACEHOLDERS = [
-  "Search apps.",
+  "Search apps",
   "Type ! for commands",
   "!calc 2+2",
 ]

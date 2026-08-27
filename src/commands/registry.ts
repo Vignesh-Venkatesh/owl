@@ -135,6 +135,11 @@ export class CommandRegistry {
       .map((result) => result.command)
   }
 
+  // finding passive match for commands to use
+  findPassiveMatch(query: string): Command | undefined {
+    return this.getAll().find((command) => command.passiveMatch?.(query))
+  }
+
   // all commands currently registered
   getAll(): Command[]{
     return Array.from(this.byId.values())
