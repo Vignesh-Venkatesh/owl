@@ -16,7 +16,7 @@ function UuidResults({ results }: UuidResultProps) {
   return (
     <div className="flex-1 px-2 py-2">
       <div className="rounded px-3 py-3">
-        <p className="font-mono text-2xl font-semibold text-text/90 text-end animate-calc-pop">
+        <p key={result.value} className="font-mono text-2xl font-semibold text-text/90 text-end animate-calc-pop">
           {result.value}
         </p>
       </div>
