@@ -7,6 +7,7 @@ import { useToast } from "./components/toast/ToastProvider"
 import type { KeyboardEvent } from "react"
 
 import type { AppEntry } from "./types"
+import type { ResultItem } from "./commands/types"
 
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import { invoke } from "@tauri-apps/api/core"
@@ -18,7 +19,6 @@ import ResultArea from "./components/results/ResultArea"
 import Footer from "./components/Footer"
 
 import { searchApps } from "./commands/providers/apps"
-import { calculate, calculatorCommand } from "./commands/providers/calculator"
 import { commandRegistry } from "./commands"
 
 function App() {
@@ -38,12 +38,25 @@ function App() {
 
   // for keeping current selection in view
   const selectedRef = useRef<HTMLParagraphElement | null>(null)
-
   useEffect(() => {
     selectedRef.current?.scrollIntoView({
       block: "nearest",
     })
   }, [selectedIndex, inputValue])
+
+  const [activationResults, setActivationResults] = useState<ResultItem[]>([])
+  const activeCommand =
+    mode.kind === "command-active"
+      ? mode.command
+      : null
+  useEffect(() => {
+    if (activeCommand?.runOn === "activation") {
+      setActivationResults(activeCommand.handler(""))
+      return
+    }
+    setActivationResults([])
+  }, [activateCommand])
+
 
   // loading application list
   useEffect(() => {
@@ -59,12 +72,18 @@ function App() {
       })
   }, [])
 
+  // for passive command searching
+  const passiveCommand =
+    mode.kind === "search"
+      ? commandRegistry.findPassiveMatch(mode.query)
+      : undefined
+
   // searching happens entirely in the frontend... for now...
   // normal search mode uses the app search provider
   const results =
     mode.kind === "search"
-      ? calculatorCommand.passiveMatch?.(mode.query)
-        ? calculate(mode.query)
+      ? passiveCommand
+        ? passiveCommand.handler(mode.query)
         : searchApps(apps, mode.query)
       : mode.kind === "command-picker"
         ? commandRegistry.search(mode.filter).map((command) => ({
@@ -72,9 +91,9 @@ function App() {
             id: `command:${command.id}`,
             command,
           }))
-        : mode.command.id === "calc"
-          ? calculate(mode.query)
-          : []
+        : mode.command.runOn === "activation"
+          ? activationResults
+          : mode.command.handler(mode.query)
 
   // function to handle query changes
   function handleQueryChange(value: string) {

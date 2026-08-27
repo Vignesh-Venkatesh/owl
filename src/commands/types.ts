@@ -11,6 +11,9 @@ export type CommandMode =
   | "instant" // immediately shows result
   | "action" // might take a while, so perhaps must require a loading state
 
+export type CommandRunOn =
+  | "query-change"
+  | "activation"
 
 export interface Command {
   apiVersion: 1
@@ -21,6 +24,8 @@ export interface Command {
   category: CommandCategory
   mode: CommandMode
   passiveMatch?: (query: string) => boolean
+  handler: (query: string) => ResultItem[]
+  runOn: CommandRunOn
 }
 
 
