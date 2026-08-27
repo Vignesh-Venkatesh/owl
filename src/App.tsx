@@ -45,18 +45,20 @@ function App() {
   }, [selectedIndex, inputValue])
 
   const [activationResults, setActivationResults] = useState<ResultItem[]>([])
+
   const activeCommand =
     mode.kind === "command-active"
       ? mode.command
       : null
+
   useEffect(() => {
     if (activeCommand?.runOn === "activation") {
       setActivationResults(activeCommand.handler(""))
       return
     }
-    setActivationResults([])
-  }, [activateCommand])
 
+    setActivationResults([])
+  }, [activeCommand?.id])
 
   // loading application list
   useEffect(() => {
@@ -103,6 +105,7 @@ function App() {
     if (mode.kind === "command-picker" && value.startsWith("!") && value.endsWith(" ")) {
       const commandName = value.slice(1, -1)
       const command = commandRegistry.getByNameOrAlias(commandName) // getting command name if it exists in registry
+
       if (command) {
         activateCommand(command, commandName)
         setSelectedIndex(0)
@@ -195,6 +198,18 @@ function App() {
           toast.success(`copied ${selectedResult.value}`)
         } catch (err) {
           console.error("failed to copy calculator result:", err)
+          toast.error("failed to copy")
+        }
+        return
+      }
+
+      // UUID results are copied to the clipboard
+      if (selectedResult.type === "uuid") {
+        try {
+          await writeText(selectedResult.value)
+          toast.success(`copied \n${selectedResult.value}`)
+        } catch (err) {
+          console.error("failed to copy UUID result:", err)
           toast.error("failed to copy")
         }
         return

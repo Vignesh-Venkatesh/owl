@@ -98,7 +98,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
     <button
       type="button"
       onClick={dismiss}
-      className={`w-full rounded-lg border bg-bg px-3 py-2 text-left text-sm shadow-lg transition-all duration-200 motion-reduce:transition-none ${variantClass} ${
+      className={`flex w-full items-center justify-center rounded-lg border bg-bg px-3 py-2 text-center text-sm shadow-lg transition-all duration-200 motion-reduce:transition-none ${variantClass} ${
         entered && !exiting
           ? "translate-y-0 opacity-100"
           : "translate-y-2 opacity-0"

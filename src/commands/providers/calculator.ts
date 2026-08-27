@@ -11,8 +11,9 @@ export const calculatorCommand: Command = {
   category: "utility",
   mode: "instant",
   passiveMatch,
-  handler: calculate,
   runOn: "query-change",
+  handler: calculate,
+  resultType: "calc",
 }
 
 const parser = new Parser()
