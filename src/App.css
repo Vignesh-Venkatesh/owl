@@ -42,6 +42,10 @@
 @import "./themes/oled.css";
 @import "./themes/gruvbox.css";
 @import "./themes/catppuccin.css";
+@import "./themes/dracula.css";
+@import "./themes/tokyo-night.css";
+@import "./themes/one-dark.css";
+@import "./themes/everforest.css";
 
 body {
   font-family: "JetBrains Mono", monospace;
