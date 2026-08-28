@@ -2595,6 +2595,8 @@ name = "owl"
 version = "0.2.1"
 dependencies = [
  "freedesktop-icons",
+ "gdkx11",
+ "gtk",
  "serde",
  "serde_json",
  "tauri",
