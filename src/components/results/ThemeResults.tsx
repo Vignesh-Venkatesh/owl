@@ -1,4 +1,4 @@
-import type { RefObject } from "react"
+import type { ResultRendererProps } from "./types"
 
 // icon imports
 import { CornerDownLeft } from "lucide-react"
@@ -11,21 +11,7 @@ import type { ResultItem } from "../../commands/types"
 
 type ThemeResult = Extract<ResultItem, { type: "theme" }>
 
-type ThemeResultsProps = {
-  results: ThemeResult[]
-  selectedIndex: number
-  onSelect: (index: number) => void
-  onActivate: (theme: ThemeResult) => void
-  selectedRef: RefObject<HTMLParagraphElement | null>
-}
-
-function ThemeResults({
-  results,
-  selectedIndex,
-  onSelect,
-  onActivate,
-  selectedRef,
-}: ThemeResultsProps) {
+function ThemeResults({results,selectedIndex,onSelect,onActivate,selectedRef,}: ResultRendererProps<ThemeResult>) {
   if (results.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-1.5 px-4 py-14 text-center">

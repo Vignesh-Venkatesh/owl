@@ -7,7 +7,7 @@ import { useToast } from "./components/toast/ToastProvider"
 import type { KeyboardEvent } from "react"
 
 import type { AppEntry } from "./types"
-import type { ResultItem } from "./commands/types"
+import type { ResultItem, ActivationContext } from "./commands/types"
 
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import { invoke } from "@tauri-apps/api/core"
@@ -21,10 +21,14 @@ import Footer from "./components/Footer"
 import { searchApps } from "./commands/providers/apps"
 import { commandRegistry } from "./commands"
 import { resolveFooterHints } from "./commands/footerHints"
-import { applyTheme } from "./themes/theme"
 
 function App() {
   const toast = useToast()
+
+  const activationContext: ActivationContext = {
+    toast,
+    copyToClipboard: writeText,
+  }
 
   // complete application index returned by rust backend
   const [apps, setApps] = useState<AppEntry[]>([])
@@ -131,11 +135,11 @@ function App() {
     }
   }
 
-  function activateTheme(
-    theme: Extract<ResultItem, { type: "theme" }>
-  ) {
-    applyTheme(theme.themeId)
-    toast.success(`Theme set to ${theme.name}`)
+  async function activateResult(result: ResultItem) {
+    if (mode.kind !== "command-active" || !mode.command.onActivate) {
+      return
+    }
+    await mode.command.onActivate(result, activationContext)
   }
 
   // launching app
@@ -180,12 +184,13 @@ function App() {
     }
 
     // Tab is pressed
-    if (event.key === "Tab") {
-      if (mode.kind === "command-active" && mode.command.id === "uuid") {
-        event.preventDefault()
-        setActivationResults(mode.command.handler(""))
-        return
+    if (event.key === "Tab" && mode.kind === "command-active" && mode.command.onTab) {
+      event.preventDefault()
+      const nextResults = mode.command.onTab(activationContext)
+      if (nextResults !== undefined) {
+        setActivationResults(nextResults)
       }
+      return
     }
 
 
@@ -202,43 +207,23 @@ function App() {
         return
       }
 
-      // valid calculator results are copied to the clipboard and appropriate toasts shown
-      if (selectedResult.type === "calc") {
-        if (selectedResult.status != "valid" || selectedResult.value === null) {
-          toast.error("nothing to copy")
-          return
-        }
-        try {
-          await writeText(selectedResult.value)
-          toast.success(`copied ${selectedResult.value}`)
-        } catch (err) {
-          console.error("failed to copy calculator result:", err)
-          toast.error("failed to copy")
-        }
-        return
-      }
-
-      // UUID results are copied to the clipboard
-      if (selectedResult.type === "uuid") {
-        try {
-          await writeText(selectedResult.value)
-          toast.success(`copied \n${selectedResult.value}`)
-        } catch (err) {
-          console.error("failed to copy UUID result:", err)
-          toast.error("failed to copy")
-        }
-        return
-      }
-
-      if (selectedResult.type === "theme") {
-        activateTheme(selectedResult)
-        return
-      }
-
       // command results activate the selected command
       if (selectedResult.type === "command") {
         activateCommand(selectedResult.command)
         setSelectedIndex(0)
+        return
+      }
+
+
+      const resultCommand =
+        mode.kind === "command-active"
+          ? mode.command
+          : mode.kind === "search"
+            ? passiveCommand
+            : undefined
+
+      if (resultCommand?.onActivate) {
+        await resultCommand.onActivate(selectedResult, activationContext)
         return
       }
     }
@@ -279,7 +264,7 @@ function App() {
         onActivateCommand={activateCommand}
         launchApp={launchApp}
         selectedRef={selectedRef}
-        onActivateTheme={activateTheme}
+        onActivate={activateResult}
       />
 
       {/* footer */}

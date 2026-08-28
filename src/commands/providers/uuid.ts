@@ -1,4 +1,18 @@
-import type { Command, ResultItem } from "../types";
+import type { Command, ResultItem, ActivationContext } from "../types";
+
+async function activateUuidResult(item: ResultItem,{ toast, copyToClipboard }: ActivationContext) {
+  if (item.type !== "uuid") {
+    return
+  }
+
+  try {
+    await copyToClipboard(item.value)
+    toast.success(`copied \n${item.value}`)
+  } catch (err) {
+    console.error("failed to copy UUID result:", err)
+    toast.error("failed to copy")
+  }
+}
 
 // uuid command definition
 export const uuidCommand: Command = {
@@ -12,6 +26,8 @@ export const uuidCommand: Command = {
   runOn: "activation",
   handler: generateUUID,
   resultType: "uuid",
+  onActivate: activateUuidResult,
+  onTab: generateUUID,
   footerHints: () => [
     { key: "Tab", label: "Regenerate" },
     { key: "Enter", label: "Copy", icon: "enter" },

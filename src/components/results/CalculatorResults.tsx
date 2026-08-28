@@ -1,14 +1,11 @@
 // types
 import { useState, useEffect } from "react";
 import type { ResultItem } from "../../commands/types";
+import type { ResultRendererProps } from "./types"
 
 type CalculatorResult = Extract<ResultItem, {type: "calc"}>
 
-type CalculatorResultProps = {
-  results: CalculatorResult[]
-}
-
-function CalculatorResults({ results }: CalculatorResultProps) {
+function CalculatorResults({results}: ResultRendererProps<CalculatorResult>) {
   // to remember the most recent successful calculation so incomplete expressions do not make the result flicker
   const [lastValidValue, setLastValidValue] = useState<string | null>(null)
 

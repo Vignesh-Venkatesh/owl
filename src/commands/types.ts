@@ -1,5 +1,6 @@
 import type { AppEntry } from "../types"
 import type { ThemeID } from "../themes/theme"
+import type { ToastApi } from "../components/toast/ToastProvider"
 
 // command has to fall in one of these categories
 export type CommandCategory =
@@ -18,6 +19,11 @@ export type CommandRunOn =
 
 export type CommandResultType = Exclude<ResultItem["type"], "app" | "command">
 
+export interface ActivationContext {
+  toast: ToastApi
+  copyToClipboard: (text: string) => Promise<void>
+}
+
 export interface Command {
   apiVersion: 1
   id: string
@@ -31,6 +37,8 @@ export interface Command {
   runOn: CommandRunOn
   resultType: CommandResultType
   footerHints?: (mode: InputMode) => FooterHint[]
+  onActivate?: (item: ResultItem,ctx: ActivationContext) => void | Promise<void>
+  onTab?: (ctx: ActivationContext) => ResultItem[] | void
 }
 
 
