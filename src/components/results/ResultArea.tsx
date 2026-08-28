@@ -17,9 +17,10 @@ type ResultAreaProps = {
   onActivateCommand: (command: Command) => void
   launchApp: (app: AppEntry) => Promise<void>
   selectedRef: RefObject<HTMLParagraphElement | null>
+  onActivateTheme: (theme: Extract<ResultItem, { type: "theme" }>) => void
 }
 
-function ResultArea({mode, results, query, error, selectedIndex, onSelect, onActivateCommand, launchApp, selectedRef}: ResultAreaProps) {
+function ResultArea({mode, results, query, error, selectedIndex, onSelect, onActivateCommand, launchApp, selectedRef, onActivateTheme}: ResultAreaProps) {
   // command picker has its own renderer and empty state
   if (mode.kind === "command-picker") {
     const commandResults = results.filter(
@@ -59,6 +60,25 @@ function ResultArea({mode, results, query, error, selectedIndex, onSelect, onAct
       )
       const Renderer = rendererMap[resultType]
       return <Renderer results={commandResults} />
+    }
+
+    if (resultType === "theme") {
+      const commandResults = results.filter(
+        (result): result is Extract<ResultItem, { type: "theme" }> =>
+          result.type === resultType
+      )
+
+      const Renderer = rendererMap[resultType]
+
+      return (
+        <Renderer
+          results={commandResults}
+          selectedIndex={selectedIndex}
+          onSelect={onSelect}
+          onActivate={onActivateTheme}
+          selectedRef={selectedRef}
+        />
+      )
     }
   }
 

@@ -21,6 +21,7 @@ import Footer from "./components/Footer"
 import { searchApps } from "./commands/providers/apps"
 import { commandRegistry } from "./commands"
 import { resolveFooterHints } from "./commands/footerHints"
+import { applyTheme } from "./themes/theme"
 
 function App() {
   const toast = useToast()
@@ -130,6 +131,13 @@ function App() {
     }
   }
 
+  function activateTheme(
+    theme: Extract<ResultItem, { type: "theme" }>
+  ) {
+    applyTheme(theme.themeId)
+    toast.success(`Theme set to ${theme.name}`)
+  }
+
   // launching app
   async function launchApp(app: AppEntry) {
     try {
@@ -222,6 +230,11 @@ function App() {
         return
       }
 
+      if (selectedResult.type === "theme") {
+        activateTheme(selectedResult)
+        return
+      }
+
       // command results activate the selected command
       if (selectedResult.type === "command") {
         activateCommand(selectedResult.command)
@@ -266,6 +279,7 @@ function App() {
         onActivateCommand={activateCommand}
         launchApp={launchApp}
         selectedRef={selectedRef}
+        onActivateTheme={activateTheme}
       />
 
       {/* footer */}

@@ -1,4 +1,5 @@
 import type { AppEntry } from "../types"
+import type { ThemeID } from "../themes/theme"
 
 // command has to fall in one of these categories
 export type CommandCategory =
@@ -55,6 +56,12 @@ export type ResultItem =
       type: "uuid" // uuid generator
       id: string
       value: string
+    }
+  | {
+      type: "theme"
+      id: string
+      themeId: ThemeID
+      name: string
     }
 
 
