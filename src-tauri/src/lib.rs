@@ -2,7 +2,7 @@ mod indexer;
 
 use indexer::AppEntry;
 use std::process::{Command, Stdio};
-use tauri::Manager;
+use tauri::{Manager, PhysicalPosition};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -67,6 +67,30 @@ fn launch_app(exec: String, terminal: bool) -> Result<(), String> {
     Ok(())
 }
 
+fn center_window_on_cursor_monitor(
+    app: &tauri::AppHandle,
+    window: &tauri::WebviewWindow,
+) -> tauri::Result<()> {
+    let cursor = app.cursor_position()?;
+
+    let Some(monitor) = app.monitor_from_point(cursor.x, cursor.y)? else {
+        return Ok(());
+    };
+
+    let work_area = monitor.work_area();
+    let window_size = window.outer_size()?;
+
+    let x =
+        work_area.position.x + (work_area.size.width.saturating_sub(window_size.width) / 2) as i32;
+
+    let y = work_area.position.y
+        + (work_area.size.height.saturating_sub(window_size.height) / 2) as i32;
+
+    window.set_position(PhysicalPosition::new(x, y))?;
+
+    Ok(())
+}
+
 // startup function
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -81,7 +105,7 @@ pub fn run() {
                             if window.is_visible().unwrap_or(false) {
                                 let _ = window.hide();
                             } else {
-                                let _ = window.center();
+                                let _ = center_window_on_cursor_monitor(app, &window);
                                 let _ = window.set_focusable(true);
                                 let _ = window.set_always_on_top(true);
                                 let _ = window.unminimize();
@@ -106,6 +130,14 @@ pub fn run() {
         })
         // runs during startup
         .setup(|app| {
+            let window = app
+                .get_webview_window("main")
+                .expect("main window should exist");
+
+            center_window_on_cursor_monitor(app.app_handle(), &window)?;
+            window.show()?;
+            window.set_focus()?;
+
             // shortcut
             let shortcut = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::Space);
 
