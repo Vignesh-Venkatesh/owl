@@ -1,7 +1,7 @@
 [package]
 name = "owl"
-version = "0.2.0"
-description = "a launcher?"
+version = "0.2.1"
+description = "definitely a launcher"
 authors = ["Vignesh"]
 edition = "2021"
 

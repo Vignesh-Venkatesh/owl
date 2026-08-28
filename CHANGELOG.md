@@ -6,6 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.2.1]
+
+A utility and interface update adding UUID generation, toast feedback, and improvements to owl's command and search experience.
+
+### Added
+
+* Search bar placeholder carousel with fading hints for application search and commands.
+* Global toast notification system with success, error, and info variants.
+* New `!uuid` command for generating random UUID v4 values.
+* `!guid` alias for the UUID command.
+* Clipboard support for copying generated UUIDs with `Enter`.
+* UUID regeneration with `Tab` while the UUID command is active.
+
+### Changed
+
+* Search placeholder transitions now respect reduced motion preferences.
+* Generalized command execution so commands own their handlers instead of requiring command specific execution logic in the application.
+* Added command execution lifecycles for commands that rerun on query changes and commands that run once when activated.
+* Generalized passive command matching through the command registry.
+* Generalized command result rendering through declared result types.
+* UUID results replay their pop animation when regenerated.
+
+### Fixed
+
+* Fixed activation only commands repeatedly executing during React renders.
+* Calculator copy failures and invalid results now provide visible toast feedback instead of silently failing.
+
+### Known Limitations
+
+* Footer doesn't change to appropriate shortcuts when entering command mode.
+
+---
+
 ## [0.2.0]
 
 A command focused release introducing owl's first command system and built in calculator.
