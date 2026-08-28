@@ -97,6 +97,13 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         // making greet function callable from frontend
         .invoke_handler(tauri::generate_handler![greet, search_apps, launch_app])
+        .on_window_event(|window, event| {
+            if window.label() == "main" {
+                if let tauri::WindowEvent::Focused(false) = event {
+                    let _ = window.hide();
+                }
+            }
+        })
         // runs during startup
         .setup(|app| {
             // shortcut
