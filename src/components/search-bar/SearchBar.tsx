@@ -6,6 +6,7 @@ import type { KeyboardEvent } from "react"
 // components import
 import Kbd from "../Kbd"
 import { useSearchPlaceholder } from "./useSearchPlaceholder"
+import { useCurrentTime } from "../../hooks/useCurrentTime"
 
 type SearchBarProps = {
   query: string
@@ -18,6 +19,14 @@ type SearchBarProps = {
 
 function SearchBar({ query, resultCount, onQueryChange, onKeyDown, carouselActive }: SearchBarProps) {
   const { placeholder, visible } = useSearchPlaceholder(carouselActive)
+
+  // current time
+  const time = useCurrentTime()
+
+  const formattedTime = time.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  })
 
   return (
     <div className="flex items-center gap-3 border-b border-border px-4 py-4">
@@ -54,13 +63,21 @@ function SearchBar({ query, resultCount, onQueryChange, onKeyDown, carouselActiv
       </div>
 
       {/*result count*/}
-      <Kbd
+      {/*<Kbd
         size="sm"
         className={`shrink-0 text-muted transition-opacity ${
           query ? "opacity-100" : "opacity-0"
         }`}
       >
         {resultCount}
+      </Kbd>*/}
+
+      {/*result count*/}
+      <Kbd
+        size="sm"
+        className={`shrink-0 text-muted transition-opacity font-semibold`}
+      >
+        {formattedTime}
       </Kbd>
     </div>
   )

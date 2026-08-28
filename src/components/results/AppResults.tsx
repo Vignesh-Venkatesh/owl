@@ -46,7 +46,7 @@ function AppResults({results,query,error,selectedIndex,onSelect,launchApp,select
           </p>
 
           {query && (
-            <p className="text-xs text-muted">
+            <p className="text-xs text-muted whitespace-normal break-all">
               No matches for "{query}"
             </p>
           )}
