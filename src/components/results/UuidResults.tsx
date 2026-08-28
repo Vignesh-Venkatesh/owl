@@ -1,12 +1,9 @@
 import type { ResultItem } from "../../commands/types";
+import type { ResultRendererProps } from "./types"
 
 type UuidResult = Extract<ResultItem, { type: "uuid" }>
 
-type UuidResultProps = {
-  results: UuidResult[]
-}
-
-function UuidResults({ results }: UuidResultProps) {
+function UuidResults({results,}: ResultRendererProps<UuidResult>) {
   const result = results[0]
 
   if (!result) {

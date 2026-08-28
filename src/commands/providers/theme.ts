@@ -1,5 +1,15 @@
-import type { Command, ResultItem } from "../types";
-import { THEMES } from "../../themes/theme";
+import type { Command, ResultItem, ActivationContext } from "../types";
+import {applyTheme, THEMES } from "../../themes/theme";
+
+
+function activateThemeResult(item: ResultItem,{ toast }: ActivationContext) {
+  if (item.type !== "theme") {
+    return
+  }
+
+  applyTheme(item.themeId)
+  toast.success(`Theme set to ${item.name}`)
+}
 
 // theme command definition
 export const themeCommand: Command = {
@@ -13,6 +23,7 @@ export const themeCommand: Command = {
   runOn: "query-change",
   handler: searchThemes,
   resultType: "theme",
+  onActivate: activateThemeResult,
 }
 
 
