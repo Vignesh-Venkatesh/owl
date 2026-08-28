@@ -4,7 +4,7 @@
 
 # owl
 
-### a launcher?
+### most definitely a launcher
 
 <p>
     <a href="https://github.com/Vignesh-Venkatesh/owl/releases">
@@ -32,14 +32,15 @@
 
 owl is an application launcher.
 
-It's early, small, and currently built around Linux. The goal is to keep the launcher fast and simple while gradually adding the things that are actually useful.
+It's early, small, and currently built around Linux. The goal is to keep the launcher fast and simple while gradually adding things that are actually useful.
 
+---
 
 <p align="center">
-  <img src="./assets/owl-v0.2.0-1.png" alt="owl preview">
-  <img src="./assets/owl-v0.2.0-2.png" alt="owl calculator preview">
+  <img src="./assets/owl-v0.2.2.png" alt="owl preview">
 </p>
 
+---
 
 ## Features
 
@@ -48,9 +49,13 @@ It's early, small, and currently built around Linux. The goal is to keep the lau
 * **Command palette** - type `!` to browse and activate built in commands.
 * **Calculator** - use `!calc`, `!cal`, `!calculator`, or `!math` to evaluate expressions.
 * **Instant calculations** - type expressions such as `2+2` directly without entering command mode.
-* **Copy results** - press `Enter` on a calculator result to copy it to the clipboard.
+* **UUID generator** - use `!uuid` or `!guid` to generate UUID v4 values.
+* **Copy results** - press `Enter` on calculator and UUID results to copy them to the clipboard.
+* **Context aware shortcuts** - footer hints adapt to the current launcher mode and available actions.
+* **Multi monitor aware** - owl opens on the monitor containing your cursor.
+* **Current time** - the search bar displays your local time.
 * **Keyboard first** - navigate results, activate commands, and launch apps without touching the mouse.
-* **Stays out of the way** - launch something or press `Esc` and owl disappears.
+* **Stays out of the way** - launch something, press `Esc`, or focus another window and owl disappears.
 * **Lightweight** - built with Tauri, Rust, React, and TypeScript.
 
 ## Usage
@@ -103,14 +108,34 @@ You can also calculate directly from normal search:
 
 Press `Enter` on a valid calculator result to copy it to the clipboard.
 
+### UUID
+
+Activate the UUID generator with:
+
+```
+!uuid
+```
+
+The `!guid` alias also works:
+
+```
+!guid
+```
+
+Press `Enter` to copy the generated UUID to the clipboard.
+
+Press `Tab` to generate a new UUID while the command is active.
+
+
 ### Keyboard shortcuts
 
 ```text
 Ctrl + Alt + Space      Open / hide owl
 ↑ / ↓                   Navigate results
-Enter                   Launch app / activate command / copy calculator result
+Enter                   Launch / select / copy result
 Space                   Activate an exact command from the command picker
-Esc                     Exit command mode / hide owl
+Tab                     Regenerate UUID when the UUID command is active
+Esc                     Go back / hide owl
 ```
 
 ## Install
@@ -161,10 +186,8 @@ bun run tauri build
 
 ## Known issues
 
-This is `v0.2.0`. Things will still be rough around the edges.
+This is `v0.2.2`. Things will still be rough around the edges.
 
-* Footer shortcuts don't yet update when entering command mode.
-* Calculator copy actions don't currently show a success notification.
 * Some terminal applications may not launch correctly.
 * owl has only been tested on Linux so far.
 * Application discovery currently follows Linux desktop entry conventions.

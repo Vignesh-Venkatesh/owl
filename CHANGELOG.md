@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.2.2]
+
+A release focused on contextual shortcut guidance, improved window behavior, and search bar refinements.
+
+### Added
+
+* Context aware footer hints that adapt to the current launcher mode and available actions.
+* Current local time display in the search bar.
+
+### Changed
+
+* Launcher now opens centered on the monitor containing the cursor.
+
+### Fixed
+
+* Launcher now hides when focus moves to another window.
+* Improved launcher focus behavior when summoned on Linux.
+
+---
+
 ## [0.2.1]
 
 A utility and interface update adding UUID generation, toast feedback, and improvements to owl's command and search experience.
