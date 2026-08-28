@@ -29,6 +29,7 @@ export interface Command {
   handler: (query: string) => ResultItem[]
   runOn: CommandRunOn
   resultType: CommandResultType
+  footerHints?: (mode: InputMode) => FooterHint[]
 }
 
 
@@ -76,3 +77,14 @@ export type InputMode =
       query: string
       invocation: string
     }
+
+
+export type FooterHintIcon =
+  | "navigate"
+  | "enter"
+
+export interface FooterHint {
+  key: string
+  label: string
+  icon? : FooterHintIcon
+}

@@ -20,6 +20,7 @@ import Footer from "./components/Footer"
 
 import { searchApps } from "./commands/providers/apps"
 import { commandRegistry } from "./commands"
+import { resolveFooterHints } from "./commands/footerHints"
 
 function App() {
   const toast = useToast()
@@ -96,6 +97,8 @@ function App() {
         : mode.command.runOn === "activation"
           ? activationResults
           : mode.command.handler(mode.query)
+
+  const footerHints = resolveFooterHints(mode, results.length, passiveCommand)
 
   // function to handle query changes
   function handleQueryChange(value: string) {
@@ -266,7 +269,7 @@ function App() {
       />
 
       {/* footer */}
-      <Footer resultCount={results.length} />
+      <Footer resultCount={results.length} hints={footerHints}/>
     </div>
   )
 }
