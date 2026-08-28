@@ -12,6 +12,11 @@ export const uuidCommand: Command = {
   runOn: "activation",
   handler: generateUUID,
   resultType: "uuid",
+  footerHints: () => [
+    { key: "Tab", label: "Regenerate" },
+    { key: "Enter", label: "Copy", icon: "enter" },
+    { key: "Esc", label: "Back" },
+  ],
 }
 
 function generateUUID(): ResultItem[]{
