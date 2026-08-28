@@ -34,14 +34,14 @@ export function resolveFooterHints(mode: InputMode, resultCount: number, passive
     }
 
     if (passiveCommand) {
-      const commmandHints =
+      const commandHints =
         passiveCommand.footerHints?.(mode) ??
         (passiveCommand.mode === "instant"
         ? INSTANT_COMMAND_HINTS
         : ACTION_COMMAND_HINTS
         )
 
-      return commmandHints.map((hint) =>
+      return commandHints.map((hint) =>
         hint.key === "Esc"
           ? { ...hint, label: "Hide" }
           : hint
