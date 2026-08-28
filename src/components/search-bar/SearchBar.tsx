@@ -17,7 +17,8 @@ type SearchBarProps = {
 }
 
 
-function SearchBar({ query, resultCount, onQueryChange, onKeyDown, carouselActive }: SearchBarProps) {
+// function SearchBar({ query, resultCount, onQueryChange, onKeyDown, carouselActive }: SearchBarProps) {
+function SearchBar({ query, onQueryChange, onKeyDown, carouselActive }: SearchBarProps) {
   const { placeholder, visible } = useSearchPlaceholder(carouselActive)
 
   // current time
