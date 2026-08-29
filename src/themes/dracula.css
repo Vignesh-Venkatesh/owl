@@ -1,10 +1,10 @@
 [data-theme="dracula"] {
   --t-bg: #282a36;
-  --t-surface: #303342;
-  --t-surface-2: #3b3e52;
-  --t-border: #44475a;
+  --t-surface: #343746;
+  --t-surface-2: #44475a;
+  --t-border: #56596f;
   --t-text: #f8f8f2;
-  --t-text-dim: #c9c9d1;
+  --t-text-dim: #c5c8d6;
   --t-accent: #bd93f9;
   --t-muted: #6272a4;
   --t-danger: #ff5555;

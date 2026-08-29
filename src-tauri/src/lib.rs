@@ -1,3 +1,4 @@
+mod config;
 mod indexer;
 
 use indexer::AppEntry;
@@ -9,6 +10,19 @@ use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut,
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
+}
+
+#[tauri::command]
+fn get_theme(app: tauri::AppHandle) -> Result<String, String> {
+    let config = config::load_config(&app)?;
+    Ok(config.appearance.theme)
+}
+
+#[tauri::command]
+fn set_theme(app: tauri::AppHandle, theme_id: String) -> Result<(), String> {
+    let mut config = config::load_config(&app)?;
+    config.appearance.theme = theme_id;
+    config::save_config(&app, &config)
 }
 
 #[tauri::command]
@@ -156,7 +170,13 @@ pub fn run() {
         // install opener plugin
         .plugin(tauri_plugin_opener::init())
         // making greet function callable from frontend
-        .invoke_handler(tauri::generate_handler![greet, search_apps, launch_app])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            search_apps,
+            launch_app,
+            get_theme,
+            set_theme
+        ])
         // hide launcher when focus moves elsewhere
         .on_window_event(|window, event| {
             if window.label() == "main" {
@@ -178,6 +198,7 @@ pub fn run() {
 
             // shortcut
             let shortcut = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::Space);
+            // let shortcut = Shortcut::new(Some(Modifiers::ALT), Code::Space);
 
             // registering shortcut globally
             app.global_shortcut().register(shortcut)?;

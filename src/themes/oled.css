@@ -1,12 +1,12 @@
 [data-theme="oled"] {
   --t-bg: #000000;
-  --t-surface: #070707;
-  --t-surface-2: #111111;
-  --t-border: #1f1f1f;
+  --t-surface: #090909;
+  --t-surface-2: #121212;
+  --t-border: #242424;
   --t-text: #f5f5f5;
-  --t-text-dim: #c7c7c7;
-  --t-accent: #8ab4ff;
-  --t-muted: #737373;
-  --t-danger: #ff6b6b;
-  --t-good: #7ddc8a;
+  --t-text-dim: #b5b5b5;
+  --t-accent: #ffffff;
+  --t-muted: #707070;
+  --t-danger: #ff6464;
+  --t-good: #72d68c;
 }

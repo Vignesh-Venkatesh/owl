@@ -1,8 +1,9 @@
-import type { RefObject } from "react"
+import type { ComponentType, RefObject } from "react"
 
 // types
 import type { AppEntry } from "../../types"
 import type { InputMode, ResultItem, Command } from "../../commands/types"
+import type { ResultRendererProps } from "./types"
 
 // results
 import { rendererMap } from "./rendererMap"
@@ -17,9 +18,10 @@ type ResultAreaProps = {
   onActivateCommand: (command: Command) => void
   launchApp: (app: AppEntry) => Promise<void>
   selectedRef: RefObject<HTMLParagraphElement | null>
+  onActivate: (result: ResultItem) => void
 }
 
-function ResultArea({mode, results, query, error, selectedIndex, onSelect, onActivateCommand, launchApp, selectedRef}: ResultAreaProps) {
+function ResultArea({mode,results,query,error,selectedIndex,onSelect,onActivateCommand,launchApp,selectedRef,onActivate,}: ResultAreaProps) {
   // command picker has its own renderer and empty state
   if (mode.kind === "command-picker") {
     const commandResults = results.filter(
@@ -40,38 +42,39 @@ function ResultArea({mode, results, query, error, selectedIndex, onSelect, onAct
     )
   }
 
-  // active commands wait for command-specific input/results
+  // active commands render through their declared result type
   if (mode.kind === "command-active") {
     const resultType = mode.command.resultType
-    if (resultType === "calc") {
-      const commandResults = results.filter(
-        (result): result is Extract<ResultItem, { type: "calc" }> =>
-          result.type === resultType
-      )
-      const Renderer = rendererMap[resultType]
-      return <Renderer results={commandResults} />
-    }
-
-    if (resultType === "uuid") {
-      const commandResults = results.filter(
-        (result): result is Extract<ResultItem, { type: "uuid" }> =>
-          result.type === resultType
-      )
-      const Renderer = rendererMap[resultType]
-      return <Renderer results={commandResults} />
-    }
+    const commandResults = results.filter(
+      (result) => result.type === resultType
+    )
+    const Renderer = rendererMap[resultType] as ComponentType<ResultRendererProps<ResultItem>>
+    return (
+      <Renderer
+        results={commandResults}
+        selectedIndex={selectedIndex}
+        onSelect={onSelect}
+        onActivate={onActivate}
+        selectedRef={selectedRef}
+      />
+    )
   }
 
   // passive calculator results can appear while still in normal search mode
   const calcResults = results.filter(
-    (result): result is Extract<ResultItem, {type: "calc"}> =>
+    (result): result is Extract<ResultItem, { type: "calc" }> =>
       result.type === "calc"
   )
-  if (calcResults.length>0) {
+
+  if (calcResults.length > 0) {
     const Renderer = rendererMap.calc
     return (
       <Renderer
         results={calcResults}
+        selectedIndex={selectedIndex}
+        onSelect={onSelect}
+        onActivate={onActivate}
+        selectedRef={selectedRef}
       />
     )
   }

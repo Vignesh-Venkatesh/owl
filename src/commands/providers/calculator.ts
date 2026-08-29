@@ -1,5 +1,24 @@
 import { Parser } from "expr-eval";
-import type { Command, ResultItem } from "../types";
+import type { Command, ResultItem, ActivationContext } from "../types";
+
+async function activateCalculatorResult(item: ResultItem,{ toast, copyToClipboard }: ActivationContext) {
+  if (item.type !== "calc") {
+    return
+  }
+
+  if (item.status !== "valid" || item.value === null) {
+    toast.error("nothing to copy")
+    return
+  }
+
+  try {
+    await copyToClipboard(item.value)
+    toast.success(`copied ${item.value}`)
+  } catch (err) {
+    console.error("failed to copy calculator result:", err)
+    toast.error("failed to copy")
+  }
+}
 
 // calculator command definition
 export const calculatorCommand: Command = {
@@ -14,6 +33,7 @@ export const calculatorCommand: Command = {
   runOn: "query-change",
   handler: calculate,
   resultType: "calc",
+  onActivate: activateCalculatorResult,
 }
 
 const parser = new Parser()

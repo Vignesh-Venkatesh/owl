@@ -1,7 +1,7 @@
 [data-theme="tokyo-night"] {
   --t-bg: #1a1b26;
-  --t-surface: #1f2335;
-  --t-surface-2: #24283b;
+  --t-surface: #24283b;
+  --t-surface-2: #292e42;
   --t-border: #3b4261;
   --t-text: #c0caf5;
   --t-text-dim: #a9b1d6;
@@ -9,4 +9,17 @@
   --t-muted: #565f89;
   --t-danger: #f7768e;
   --t-good: #9ece6a;
+}
+
+[data-theme="tokyo-night-day"] {
+  --t-bg: #e1e2e7;
+  --t-surface: #f1f2f6;
+  --t-surface-2: #d5d6db;
+  --t-border: #b7b9c3;
+  --t-text: #3760bf;
+  --t-text-dim: #6172a0;
+  --t-accent: #2e7de9;
+  --t-muted: #8990b3;
+  --t-danger: #f52a65;
+  --t-good: #587539;
 }

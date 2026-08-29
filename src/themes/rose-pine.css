@@ -1,0 +1,25 @@
+[data-theme="rose-pine"] {
+  --t-bg: #191724;
+  --t-surface: #1f1d2e;
+  --t-surface-2: #26233a;
+  --t-border: #403d52;
+  --t-text: #e0def4;
+  --t-text-dim: #908caa;
+  --t-accent: #c4a7e7;
+  --t-muted: #6e6a86;
+  --t-danger: #eb6f92;
+  --t-good: #9ccfd8;
+}
+
+[data-theme="rose-pine-dawn"] {
+  --t-bg: #faf4ed;
+  --t-surface: #fffaf3;
+  --t-surface-2: #f2e9e1;
+  --t-border: #dfdad9;
+  --t-text: #575279;
+  --t-text-dim: #797593;
+  --t-accent: #907aa9;
+  --t-muted: #9893a5;
+  --t-danger: #b4637a;
+  --t-good: #56949f;
+}
