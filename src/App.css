@@ -21,7 +21,7 @@
   font-style: normal;
 }
 
-@theme {
+@theme inline {
   --font-mono: "JetBrains Mono", monospace;
   --color-bg: var(--t-bg);
   --color-surface: var(--t-surface);
@@ -36,16 +36,20 @@
 }
 
 @import "./themes/owl.css";
-@import "./themes/midnight.css";
-@import "./themes/nord.css";
-@import "./themes/light.css";
 @import "./themes/oled.css";
+@import "./themes/nord.css";
 @import "./themes/gruvbox.css";
 @import "./themes/catppuccin.css";
-@import "./themes/dracula.css";
+@import "./themes/solarized.css";
+@import "./themes/one.css";
 @import "./themes/tokyo-night.css";
-@import "./themes/one-dark.css";
+@import "./themes/rose-pine.css";
 @import "./themes/everforest.css";
+@import "./themes/github.css";
+@import "./themes/ayu.css";
+@import "./themes/monokai-pro.css";
+@import "./themes/dracula.css";
+@import "./themes/crimson.css";
 
 body {
   font-family: "JetBrains Mono", monospace;

@@ -1,0 +1,25 @@
+[data-theme="solarized-dark"] {
+  --t-bg: #002b36;
+  --t-surface: #073642;
+  --t-surface-2: #0b414d;
+  --t-border: #285661;
+  --t-text: #eee8d5;
+  --t-text-dim: #93a1a1;
+  --t-accent: #268bd2;
+  --t-muted: #657b83;
+  --t-danger: #dc322f;
+  --t-good: #859900;
+}
+
+[data-theme="solarized-light"] {
+  --t-bg: #fdf6e3;
+  --t-surface: #eee8d5;
+  --t-surface-2: #e5ddc8;
+  --t-border: #d3cbb7;
+  --t-text: #586e75;
+  --t-text-dim: #657b83;
+  --t-accent: #268bd2;
+  --t-muted: #93a1a1;
+  --t-danger: #dc322f;
+  --t-good: #859900;
+}

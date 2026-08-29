@@ -1,12 +1,25 @@
-[data-theme="catppuccin"] {
+[data-theme="catppuccin-mocha"] {
   --t-bg: #1e1e2e;
-  --t-surface: #181825;
-  --t-surface-2: #313244;
-  --t-border: #45475a;
+  --t-surface: #313244;
+  --t-surface-2: #45475a;
+  --t-border: #585b70;
   --t-text: #cdd6f4;
   --t-text-dim: #bac2de;
   --t-accent: #cba6f7;
   --t-muted: #7f849c;
   --t-danger: #f38ba8;
   --t-good: #a6e3a1;
+}
+
+[data-theme="catppuccin-latte"] {
+  --t-bg: #eff1f5;
+  --t-surface: #ffffff;
+  --t-surface-2: #e6e9ef;
+  --t-border: #ccd0da;
+  --t-text: #4c4f69;
+  --t-text-dim: #6c6f85;
+  --t-accent: #8839ef;
+  --t-muted: #9ca0b0;
+  --t-danger: #d20f39;
+  --t-good: #40a02b;
 }

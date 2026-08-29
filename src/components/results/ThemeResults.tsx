@@ -1,7 +1,7 @@
 import type { ResultRendererProps } from "./types"
 
 // icon imports
-import { CornerDownLeft } from "lucide-react"
+import { CornerDownLeft, Bird, Cat, Trees } from "lucide-react"
 
 // components
 import Kbd from "../Kbd"
@@ -15,7 +15,7 @@ function ThemeResults({results,selectedIndex,onSelect,onActivate,selectedRef,}: 
   if (results.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-1.5 px-4 py-14 text-center">
-        <p className="text-sm font-medium text-text-dim">
+        <p className="text-md font-medium text-text-dim">
           No themes found
         </p>
       </div>
@@ -43,11 +43,16 @@ function ThemeResults({results,selectedIndex,onSelect,onActivate,selectedRef,}: 
           <div className="flex min-w-0 items-center gap-3">
             <div
               data-theme={result.themeId}
-              className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-bg p-1.5"
+              className="flex h-8 w-11 shrink-0 overflow-hidden rounded-md border border-border bg-bg p-1"
             >
-              <span className="h-2.5 w-2.5 rounded-full bg-accent" />
-              <span className="h-2.5 w-2.5 rounded-full bg-good" />
-              <span className="h-2.5 w-2.5 rounded-full bg-danger" />
+              <div className="flex w-full flex-col gap-1">
+                <div className="h-1.5 w-5 rounded-full bg-text-dim" />
+
+                <div className="flex flex-1 gap-1">
+                  <div className="flex-1 rounded-sm bg-surface" />
+                  <div className="w-2 rounded-sm bg-accent" />
+                </div>
+              </div>
             </div>
 
             <span className="truncate text-[13.5px] text-text">
@@ -55,9 +60,18 @@ function ThemeResults({results,selectedIndex,onSelect,onActivate,selectedRef,}: 
             </span>
           </div>
 
+          {/*enter button, with custom icons for certain themes*/}
           {index === selectedIndex && (
             <Kbd size="sm" className="text-accent">
-              <CornerDownLeft size={13} strokeWidth={2.5} />
+              {result.themeId.includes("owl") ? (
+                <Bird size={13} strokeWidth={2.5} />
+              ) : result.themeId.includes("catppuccin") ? (
+                <Cat size={13} strokeWidth={2.5} />
+              ) : result.themeId.includes("everforest") ? (
+                <Trees size={13} strokeWidth={2.5} />
+              ) : (
+                <CornerDownLeft size={13} strokeWidth={2.5} />
+              )}
             </Kbd>
           )}
         </p>

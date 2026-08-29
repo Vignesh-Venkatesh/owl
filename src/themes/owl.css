@@ -10,3 +10,16 @@
   --t-danger: #d9705f;
   --t-good: #7fae7a;
 }
+
+[data-theme="owl-light"] {
+  --t-bg: #f7f6f2;
+  --t-surface: #ffffff;
+  --t-surface-2: #efede7;
+  --t-border: #d9d5cc;
+  --t-text: #24221f;
+  --t-text-dim: #67625b;
+  --t-accent: #b7791f;
+  --t-muted: #9a948b;
+  --t-danger: #c2413b;
+  --t-good: #4f7c58;
+}

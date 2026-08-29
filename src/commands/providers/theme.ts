@@ -16,7 +16,7 @@ export const themeCommand: Command = {
   apiVersion: 1,
   id: "theme",
   name: "Theme",
-  aliases: ["theme"],
+  aliases: ["theme", "themes"],
   description: "change owl's appearance",
   category: "system",
   mode: "instant",
@@ -24,6 +24,11 @@ export const themeCommand: Command = {
   handler: searchThemes,
   resultType: "theme",
   onActivate: activateThemeResult,
+  footerHints: () => [
+    { key: "↑↓", label: "Navigate", icon: "navigate" },
+    { key: "Enter", label: "Apply", icon: "enter" },
+    { key: "Esc", label: "Back" },
+  ],
 }
 
 
