@@ -1,14 +1,25 @@
 import type { Command, ResultItem, ActivationContext } from "../types";
-import {applyTheme, THEMES } from "../../themes/theme";
+import { applyTheme, THEMES } from "../../themes/theme";
+import { invoke } from "@tauri-apps/api/core";
 
 
-function activateThemeResult(item: ResultItem,{ toast }: ActivationContext) {
+async function activateThemeResult(item: ResultItem,{ toast }: ActivationContext) {
   if (item.type !== "theme") {
     return
   }
 
+  // applying immediately so the ui never waits on disk
   applyTheme(item.themeId)
-  toast.success(`Theme set to ${item.name}`)
+
+
+  try {
+    await invoke("set_theme", { themeId: item.themeId })
+    toast.success(`Theme set to ${item.name}`)
+  } catch (err) {
+    console.error("failed to save theme:", err)
+    toast.error("Theme changed, but couldn't be saved")
+  }
+
 }
 
 // theme command definition
