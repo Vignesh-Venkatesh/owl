@@ -1,4 +1,4 @@
-import type { Command, FooterHint, InputMode } from "./types"
+import type {Command, FooterHint, InputMode, ResultItem} from "./types"
 
 const SEARCH_HINTS: FooterHint[] = [
   { key: "↑↓", label: "Navigate", icon: "navigate" },
@@ -26,26 +26,18 @@ const ACTION_COMMAND_HINTS: FooterHint[] = [
   { key: "Esc", label: "Back" },
 ]
 
+export function resolveFooterHints(mode: InputMode, results: ResultItem[], passiveCommand?: Command): FooterHint[] {
+  const resultCount = results.length
 
-export function resolveFooterHints(mode: InputMode, resultCount: number, passiveCommand?: Command): FooterHint[] {
   if (mode.kind === "search") {
     if (resultCount === 0) {
       return EMPTY_SEARCH_HINTS
     }
 
     if (passiveCommand) {
-      const commandHints =
-        passiveCommand.footerHints?.(mode) ??
-        (passiveCommand.mode === "instant"
-        ? INSTANT_COMMAND_HINTS
-        : ACTION_COMMAND_HINTS
-        )
+      const commandHints = passiveCommand.footerHints?.(mode, results) ?? (passiveCommand.mode === "instant" ? INSTANT_COMMAND_HINTS : ACTION_COMMAND_HINTS)
 
-      return commandHints.map((hint) =>
-        hint.key === "Esc"
-          ? { ...hint, label: "Hide" }
-          : hint
-      )
+      return commandHints.map((hint) => hint.key === "Esc" ? { ...hint, label: "Hide" } : hint)
     }
 
     return SEARCH_HINTS
@@ -56,7 +48,7 @@ export function resolveFooterHints(mode: InputMode, resultCount: number, passive
   }
 
   if (mode.command.footerHints) {
-    return mode.command.footerHints(mode)
+    return mode.command.footerHints(mode, results)
   }
 
   return mode.command.mode === "instant" ? INSTANT_COMMAND_HINTS : ACTION_COMMAND_HINTS
