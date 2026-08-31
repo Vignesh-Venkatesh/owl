@@ -1,17 +1,18 @@
 import "./App.css"
 
-import { useEffect, useRef, useState } from "react"
-import { useInputMode } from "./input/useInputMode"
-import { useToast } from "./components/toast/ToastProvider"
+import {useEffect, useRef, useState, useMemo} from "react"
 
 import type { KeyboardEvent } from "react"
-
-import type { AppEntry } from "./types"
-import type { ResultItem, ActivationContext } from "./commands/types"
 
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import { invoke } from "@tauri-apps/api/core"
 import { writeText } from "@tauri-apps/plugin-clipboard-manager"
+
+import type { AppEntry } from "./types"
+import type {ActivationContext, ResultItem} from "./commands/types"
+
+import { useInputMode } from "./input/useInputMode"
+import { useToast } from "./components/toast/ToastProvider"
 
 // components
 import SearchBar from "./components/search-bar/SearchBar"
@@ -44,6 +45,7 @@ function App() {
 
   // for keeping current selection in view
   const selectedRef = useRef<HTMLParagraphElement | null>(null)
+
   useEffect(() => {
     selectedRef.current?.scrollIntoView({
       block: "nearest",
@@ -52,19 +54,45 @@ function App() {
 
   const [activationResults, setActivationResults] = useState<ResultItem[]>([])
 
-  const activeCommand =
-    mode.kind === "command-active"
-      ? mode.command
-      : null
+  const [interactionResults, setInteractionResults] = useState<ResultItem[] | null>(null)
 
+  const activeCommand = mode.kind === "command-active" ? mode.command : null
+
+  const activeQuery = mode.kind === "command-active" ? mode.query : ""
+
+  // activation commands run once when they become active
   useEffect(() => {
     if (activeCommand?.runOn === "activation") {
-      setActivationResults(activeCommand.handler(""))
+      setActivationResults(
+        activeCommand.handler(""),
+      )
       return
     }
 
     setActivationResults([])
   }, [activeCommand?.id])
+
+  const lastQueryResultsRef = useRef<{commandId: string | null, results: ResultItem[]}>({commandId: null, results: []})
+
+  // query-change commands only rerun when the command or its query changes
+  const rawQueryResults = useMemo(() => {
+    if (!activeCommand || activeCommand.runOn !== "query-change") {
+      return []
+    }
+    return activeCommand.handler(activeQuery)
+  }, [activeCommand, activeQuery])
+
+  // remember the last valid result from a query-change command
+  useEffect(() => {
+    if (!activeCommand || activeCommand.runOn !== "query-change" || rawQueryResults.length === 0) {
+      return
+    }
+
+    lastQueryResultsRef.current = {commandId: activeCommand.id, results: rawQueryResults}
+  }, [activeCommand?.id, rawQueryResults])
+
+  // commands can keep their previous valid result while the current query is incomplete
+  const queryResults = activeCommand?.preserveLastResultOnEmpty && rawQueryResults.length === 0 && lastQueryResultsRef.current.commandId === activeCommand.id ? lastQueryResultsRef.current.results : rawQueryResults
 
   // loading application list
   useEffect(() => {
@@ -75,7 +103,11 @@ function App() {
         setApps(indexedApps)
       })
       .catch((error) => {
-        console.error("failed to index applications:", error)
+        console.error(
+          "failed to index applications:",
+          error,
+        )
+
         setError("failed to load applications.")
       })
   }, [])
@@ -94,25 +126,30 @@ function App() {
         ? passiveCommand.handler(mode.query)
         : searchApps(apps, mode.query)
       : mode.kind === "command-picker"
-        ? commandRegistry.search(mode.filter).map((command) => ({
-            type: "command" as const,
-            id: `command:${command.id}`,
-            command,
-          }))
-        : mode.command.runOn === "activation"
-          ? activationResults
-          : mode.command.handler(mode.query)
+        ? commandRegistry
+            .search(mode.filter)
+            .map((command) => ({
+              type: "command" as const,
+              id: `command:${command.id}`,
+              command,
+            }))
+        : interactionResults ??
+          (mode.command.runOn === "activation"
+            ? activationResults
+            : queryResults)
 
-  const footerHints = resolveFooterHints(mode, results.length, passiveCommand)
+  const footerHints = resolveFooterHints(mode, results, passiveCommand)
 
   // function to handle query changes
   function handleQueryChange(value: string) {
     setError(null)
+    setInteractionResults(null)
 
     // pressing space after an exact command name, id or alias activates that command without pressing Enter
     if (mode.kind === "command-picker" && value.startsWith("!") && value.endsWith(" ")) {
       const commandName = value.slice(1, -1)
-      const command = commandRegistry.getByNameOrAlias(commandName) // getting command name if it exists in registry
+
+      const command = commandRegistry.getByNameOrAlias(commandName)
 
       if (command) {
         activateCommand(command, commandName)
@@ -139,6 +176,7 @@ function App() {
     if (mode.kind !== "command-active" || !mode.command.onActivate) {
       return
     }
+
     await mode.command.onActivate(result, activationContext)
   }
 
@@ -168,8 +206,7 @@ function App() {
         return
       }
       setSelectedIndex((currentIndex) =>
-        Math.min(currentIndex + 1, results.length - 1)
-      )
+        Math.min(currentIndex + 1, results.length - 1))
       return
     }
 
@@ -186,13 +223,12 @@ function App() {
     // Tab is pressed
     if (event.key === "Tab" && mode.kind === "command-active" && mode.command.onTab) {
       event.preventDefault()
-      const nextResults = mode.command.onTab(activationContext)
+      const nextResults = mode.command.onTab(results, activationContext)
       if (nextResults !== undefined) {
-        setActivationResults(nextResults)
+        setInteractionResults(nextResults)
       }
       return
     }
-
 
     // Enter is pressed
     if (event.key === "Enter") {
@@ -201,6 +237,7 @@ function App() {
       if (!selectedResult) {
         return
       }
+
       // app results launch applications
       if (selectedResult.type === "app") {
         await launchApp(selectedResult.app)
@@ -213,7 +250,6 @@ function App() {
         setSelectedIndex(0)
         return
       }
-
 
       const resultCommand =
         mode.kind === "command-active"
@@ -231,12 +267,14 @@ function App() {
     // Esc is pressed
     if (event.key === "Escape") {
       event.preventDefault()
+
       // escape from command modes returns to normal search
       if (mode.kind !== "search") {
         resetInput()
         setSelectedIndex(0)
         return
       }
+
       // escape from normal search hides owl
       await hideWindow()
     }
