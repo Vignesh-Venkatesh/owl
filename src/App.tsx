@@ -22,6 +22,7 @@ import Footer from "./components/Footer"
 import { searchApps } from "./commands/providers/apps"
 import { commandRegistry } from "./commands"
 import { resolveFooterHints } from "./commands/footerHints"
+import { getCommandAutocompleteMatches, getCommonPrefix } from "./commands/autocomplete"
 
 function App() {
   const toast = useToast()
@@ -51,6 +52,8 @@ function App() {
       block: "nearest",
     })
   }, [selectedIndex, inputValue])
+
+  const autocompleteCycleRef = useRef<{matches: string[], index: number} | null>(null)
 
   const [activationResults, setActivationResults] = useState<ResultItem[]>([])
 
@@ -118,6 +121,16 @@ function App() {
       ? commandRegistry.findPassiveMatch(mode.query)
       : undefined
 
+  const commandPickerCommands =
+    mode.kind === "command-picker"
+      ? autocompleteCycleRef.current
+        ? autocompleteCycleRef.current.matches.flatMap((id) => {
+          const command = commandRegistry.getById(id)
+          return command ? [command] : []
+        })
+        : commandRegistry.search(mode.filter)
+      : []
+
   // searching happens entirely in the frontend... for now...
   // normal search mode uses the app search provider
   const results =
@@ -126,22 +139,33 @@ function App() {
         ? passiveCommand.handler(mode.query)
         : searchApps(apps, mode.query)
       : mode.kind === "command-picker"
-        ? commandRegistry
-            .search(mode.filter)
-            .map((command) => ({
-              type: "command" as const,
-              id: `command:${command.id}`,
-              command,
-            }))
+        ? commandPickerCommands.map((command) => ({
+            type: "command" as const,
+            id: `command:${command.id}`,
+            command,
+          }))
         : interactionResults ??
           (mode.command.runOn === "activation"
             ? activationResults
             : queryResults)
 
-  const footerHints = resolveFooterHints(mode, results, passiveCommand)
+  const autocompleteMatches =
+    mode.kind === "command-picker"
+      ? getCommandAutocompleteMatches(inputValue, commandRegistry)
+      : []
+
+  const selectedAutocompleteResult = results[selectedIndex]
+  const autocompleteSuggestion =
+    mode.kind === "command-picker" &&
+    selectedAutocompleteResult?.type === "command"
+      ? `!${selectedAutocompleteResult.command.id}`
+      : undefined
+
+  const footerHints = resolveFooterHints(mode, results, passiveCommand, autocompleteMatches.length > 0)
 
   // function to handle query changes
   function handleQueryChange(value: string) {
+    autocompleteCycleRef.current = null
     setError(null)
     setInteractionResults(null)
 
@@ -220,6 +244,59 @@ function App() {
       return
     }
 
+    // Tab autocompletes commands while picking a command
+    if (event.key === "Tab" && mode.kind === "command-picker") {
+      event.preventDefault()
+
+      const cycle = autocompleteCycleRef.current
+
+      // repeated Tab cycles through the existing matches
+      if (cycle) {
+        const nextIndex = (cycle.index + 1) % cycle.matches.length
+        const nextMatch = cycle.matches[nextIndex]
+
+        autocompleteCycleRef.current = {
+          matches: cycle.matches,
+          index: nextIndex,
+        }
+
+        updateInput(`!${nextMatch}`)
+        setSelectedIndex(nextIndex)
+        return
+      }
+
+      const matches = getCommandAutocompleteMatches(inputValue, commandRegistry)
+
+      if (matches.length === 0) {
+        return
+      }
+
+      if (matches.length === 1) {
+        autocompleteCycleRef.current = {matches, index:0}
+
+        updateInput(`!${matches[0]}`)
+        setSelectedIndex(0)
+        return
+      }
+
+      const commonPrefix = getCommonPrefix(matches)
+      const currentPrefix = inputValue.slice(1).trim().toLowerCase()
+
+      // complete as far as possible before beginning the cycle
+      if (commonPrefix.length > currentPrefix.length) {
+        autocompleteCycleRef.current = { matches, index: -1 }
+        updateInput(`!${commonPrefix}`)
+        setSelectedIndex(0)
+        return
+      }
+
+      // no longer common prefix, so start at the first match
+      autocompleteCycleRef.current = { matches, index: 0 }
+      updateInput(`!${matches[0]}`)
+      setSelectedIndex(0)
+      return
+    }
+
     // Tab is pressed
     if (event.key === "Tab" && mode.kind === "command-active" && mode.command.onTab) {
       event.preventDefault()
@@ -289,6 +366,7 @@ function App() {
         onQueryChange={handleQueryChange}
         onKeyDown={handleKeyDown}
         carouselActive={mode.kind === "search" && inputValue === ""}
+        autocompleteSuggestion={autocompleteSuggestion}
       />
 
       {/* result area */}
