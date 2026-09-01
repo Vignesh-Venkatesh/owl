@@ -20,6 +20,7 @@
     src="https://img.shields.io/badge/platform-Linux-3B82F6?style=for-the-badge&labelColor=161B22"
     alt="Platform"
   />
+  <img src="https://img.shields.io/badge/display-X11%20only-E8A33D?style=for-the-badge&labelColor=161B22" alt="X11 only" />
 </p>
 
 [Features](#features) • [Install](#install) • [Usage](#usage) • [Development](#development) • [Roadmap](#roadmap)
@@ -32,7 +33,7 @@
 
 owl is an application launcher.
 
-It's early, small, and currently built around Linux. The goal is to keep the launcher fast and simple while gradually adding things that are actually useful.
+It's early, small, and currently built around Linux and X11. The goal is to keep the launcher fast and simple while gradually adding things that are actually useful.
 
 ---
 
@@ -219,6 +220,6 @@ No promises, but these are some things I'd like to explore:
 
 <div align="center">
 
-**owl**. A launcher?
+**owl**. most definitely a launcher.
 
 </div>
