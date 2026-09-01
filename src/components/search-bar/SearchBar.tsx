@@ -14,12 +14,19 @@ type SearchBarProps = {
   onQueryChange: (value: string) => void
   onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void
   carouselActive: boolean
+  autocompleteSuggestion?: string
 }
 
 
 // function SearchBar({ query, resultCount, onQueryChange, onKeyDown, carouselActive }: SearchBarProps) {
-function SearchBar({ query, onQueryChange, onKeyDown, carouselActive }: SearchBarProps) {
+function SearchBar({ query, onQueryChange, onKeyDown, carouselActive, autocompleteSuggestion }: SearchBarProps) {
   const { placeholder, visible } = useSearchPlaceholder(carouselActive)
+
+  const autocompleteSuffix =
+    autocompleteSuggestion &&
+    autocompleteSuggestion.toLowerCase().startsWith(query.toLowerCase())
+      ? autocompleteSuggestion.slice(query.length)
+      : ""
 
   // current time
   const time = useCurrentTime()
@@ -48,6 +55,17 @@ function SearchBar({ query, onQueryChange, onKeyDown, carouselActive }: SearchBa
             }`}
           >
             {placeholder}
+          </span>
+        )}
+
+        {/*command autocomplete*/}
+        {autocompleteSuffix && (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-0 flex items-center whitespace-pre text-[15px]"
+          >
+            <span className="invisible">{query}</span>
+            <span className="text-muted/50">{autocompleteSuffix}</span>
           </span>
         )}
 

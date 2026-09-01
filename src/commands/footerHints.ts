@@ -26,7 +26,7 @@ const ACTION_COMMAND_HINTS: FooterHint[] = [
   { key: "Esc", label: "Back" },
 ]
 
-export function resolveFooterHints(mode: InputMode, results: ResultItem[], passiveCommand?: Command): FooterHint[] {
+export function resolveFooterHints(mode: InputMode, results: ResultItem[], passiveCommand?: Command, hasAutocompleteMatches = false): FooterHint[] {
   const resultCount = results.length
 
   if (mode.kind === "search") {
@@ -44,6 +44,12 @@ export function resolveFooterHints(mode: InputMode, results: ResultItem[], passi
   }
 
   if (mode.kind === "command-picker") {
+    if (hasAutocompleteMatches) {
+      return [
+        { key: "Tab", label: "Cycle" },
+        ...COMMAND_PICKER_HINTS,
+      ]
+    }
     return COMMAND_PICKER_HINTS
   }
 
