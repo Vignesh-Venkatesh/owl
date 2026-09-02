@@ -19,6 +19,12 @@ fn get_theme(app: tauri::AppHandle) -> Result<String, String> {
 }
 
 #[tauri::command]
+fn get_web_config(app: tauri::AppHandle) -> Result<String, String> {
+    let config = config::load_config(&app)?;
+    Ok(config.web.search_engine)
+}
+
+#[tauri::command]
 fn set_theme(app: tauri::AppHandle, theme_id: String) -> Result<(), String> {
     let mut config = config::load_config(&app)?;
     config.appearance.theme = theme_id;
@@ -175,7 +181,8 @@ pub fn run() {
             search_apps,
             launch_app,
             get_theme,
-            set_theme
+            set_theme,
+            get_web_config
         ])
         // hide launcher when focus moves elsewhere
         .on_window_event(|window, event| {

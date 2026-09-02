@@ -20,6 +20,7 @@ import ResultArea from "./components/results/ResultArea"
 import Footer from "./components/Footer"
 
 import { searchApps } from "./commands/providers/apps"
+import { resolveWeb } from "./commands/providers/web"
 import { commandRegistry } from "./commands"
 import { resolveFooterHints } from "./commands/footerHints"
 import { getCommandAutocompleteMatches, getCommonPrefix } from "./commands/autocomplete"
@@ -30,7 +31,10 @@ function App() {
   const activationContext: ActivationContext = {
     toast,
     copyToClipboard: writeText,
+    hideWindow,
   }
+
+  const [webSearchEngine, setWebSearchEngine] = useState<string | null>(null)
 
   // complete application index returned by rust backend
   const [apps, setApps] = useState<AppEntry[]>([])
@@ -75,6 +79,19 @@ function App() {
     setActivationResults([])
   }, [activeCommand?.id])
 
+  // load web config when the web command becomes active
+  useEffect(() => {
+    if (activeCommand?.id !== "web") {
+      return
+    }
+    invoke<string>("get_web_config")
+      .then(setWebSearchEngine)
+      .catch((error) => {
+        console.error("failed to load web config:", error)
+        setWebSearchEngine(null)
+      })
+  }, [activeCommand?.id])
+
   const lastQueryResultsRef = useRef<{commandId: string | null, results: ResultItem[]}>({commandId: null, results: []})
 
   // query-change commands only rerun when the command or its query changes
@@ -82,8 +99,13 @@ function App() {
     if (!activeCommand || activeCommand.runOn !== "query-change") {
       return []
     }
+    if (activeCommand.id === "web") {
+      return webSearchEngine
+        ? resolveWeb(activeQuery, webSearchEngine)
+        : []
+    }
     return activeCommand.handler(activeQuery)
-  }, [activeCommand, activeQuery])
+  }, [activeCommand, activeQuery, webSearchEngine])
 
   // remember the last valid result from a query-change command
   useEffect(() => {

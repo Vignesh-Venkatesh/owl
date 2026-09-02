@@ -4,6 +4,7 @@ import CalculatorResults from "./CalculatorResults"
 import UuidResults from "./UuidResults"
 import ThemeResults from "./ThemeResults"
 import ColorResults from "./ColorResults"
+import WebResults from "./WebResults"
 
 export const rendererMap = {
   app: AppResults,
@@ -11,5 +12,6 @@ export const rendererMap = {
   calc: CalculatorResults,
   uuid: UuidResults,
   theme: ThemeResults,
-  color: ColorResults
+  color: ColorResults,
+  web: WebResults
 }
