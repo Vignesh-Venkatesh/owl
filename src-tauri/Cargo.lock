@@ -2592,7 +2592,7 @@ dependencies = [
 
 [[package]]
 name = "owl"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "freedesktop-icons",
  "gdkx11",

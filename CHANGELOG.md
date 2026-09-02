@@ -6,6 +6,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.2.3]
+
+A larger utility and customization update adding theme selection, color tools, command autocomplete, persistent configuration, and web navigation.
+
+### Added
+
+* New `!theme` command for searching and applying themes directly from owl.
+* Theme persistence through `config.toml`.
+* Expanded theme collection with additional dark and light variants.
+* New `!color` command for previewing and converting colors.
+* Support for HEX, RGB/RGBA, and HSL/HSLA color input.
+* Color format cycling between HEX, RGB, and HSL with `Tab`.
+* Clipboard support for copying converted color values with `Enter`.
+* Random color generation when activating `!color` without a value.
+* Command autocomplete suggestions while typing `!` commands.
+* `Tab` completion and cycling through matching commands.
+* Dynamic search placeholders with randomized calculator and color examples.
+* New `!web` command for opening URLs or searching the web.
+* Automatic URL detection for domains, localhost addresses, IPv4 addresses, and full HTTP/HTTPS URLs.
+* Configurable web search engine through `config.toml`.
+* Contextual web result previews and `Open`/`Search` footer actions.
+
+### Changed
+
+* Generalized command activation and result rendering so commands can own their activation and `Tab` behavior.
+* Generalized result rendering to reduce command specific handling in the main result area.
+* Expanded and reorganized owl's built in theme collection.
+* Theme selection now includes dedicated navigation and apply footer actions.
+* Search placeholders are now randomized instead of cycling through a fixed sequence.
+* Schemeless web addresses are normalized with `https://` before opening.
+* Web search queries are URL encoded before being passed to the configured search engine.
+* Owl hides after successfully opening a web result in the default browser.
+
+### Fixed
+
+* Incomplete color input keeps the last valid color preview instead of immediately clearing it.
+* Invalid web input containing spaces falls back to search instead of being interpreted as a URL.
+* Version like input such as `v1.2.3` falls back to web search instead of being interpreted as a domain.
+
+### Known Limitation
+
+* Global shortcut support currently works on X11 only. Wayland is not yet supported.
+
+---
+
 ## [0.2.2]
 
 A release focused on contextual shortcut guidance, improved window behavior, and search bar refinements.

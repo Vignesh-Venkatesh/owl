@@ -48,10 +48,16 @@ It's early, small, and currently built around Linux and X11. The goal is to keep
 * **Quick access** - open owl from anywhere with a global shortcut.
 * **Application search** - search through installed desktop applications as you type.
 * **Command palette** - type `!` to browse and activate built in commands.
+* **Command autocomplete** - press `Tab` while typing a command to complete or cycle through matching commands.
 * **Calculator** - use `!calc`, `!cal`, `!calculator`, or `!math` to evaluate expressions.
 * **Instant calculations** - type expressions such as `2+2` directly without entering command mode.
 * **UUID generator** - use `!uuid` or `!guid` to generate UUID v4 values.
-* **Copy results** - press `Enter` on calculator and UUID results to copy them to the clipboard.
+* **Themes** - use `!theme` or `!themes` to search and apply built in themes.
+* **Persistent themes** - your selected theme is saved and restored between launches.
+* **Color tools** - use `!color` to preview and convert HEX, RGB, RGBA, HSL, and HSLA colors.
+* **Web navigation** - use `!web` to open URLs or search the web from owl.
+* **Configurable web search** - choose your search engine through `config.toml`.
+* **Copy results** - copy calculator, UUID, and color results directly to the clipboard.
 * **Context aware shortcuts** - footer hints adapt to the current launcher mode and available actions.
 * **Multi monitor aware** - owl opens on the monitor containing your cursor.
 * **Current time** - the search bar displays your local time.
@@ -78,6 +84,8 @@ Or type `!` to open the command picker:
 ```text
 !
 ```
+
+Press `Tab` while typing a command to autocomplete it. If multiple commands match, repeated presses cycle through them.
 
 ### Calculator
 
@@ -113,13 +121,13 @@ Press `Enter` on a valid calculator result to copy it to the clipboard.
 
 Activate the UUID generator with:
 
-```
+```text
 !uuid
 ```
 
 The `!guid` alias also works:
 
-```
+```text
 !guid
 ```
 
@@ -127,15 +135,76 @@ Press `Enter` to copy the generated UUID to the clipboard.
 
 Press `Tab` to generate a new UUID while the command is active.
 
+### Themes
+
+Open the theme picker with:
+
+```text
+!theme
+```
+
+The `!themes` alias also works.
+
+Start typing to filter themes:
+
+```text
+!theme nord
+```
+
+Use `↑` / `↓` to navigate and press `Enter` to apply a theme. Your selection is saved for future launches.
+
+### Color
+
+Activate the color tool with:
+
+```text
+!color
+```
+
+Enter a color in HEX, RGB, RGBA, HSL, or HSLA format:
+
+```text
+!color #e8a33d
+!color rgb(232, 163, 61)
+!color hsl(36, 80%, 57%)
+```
+
+Activating `!color` without a value generates a random color.
+
+Press `Tab` to cycle between HEX, RGB, and HSL output formats.
+
+Press `Enter` to copy the displayed value.
+
+### Web
+
+Open a URL directly:
+
+```text
+!web github.com
+```
+
+Full URLs also work:
+
+```text
+!web https://github.com/Vignesh-Venkatesh/owl
+```
+
+Anything that doesn't look like a URL is sent to your configured search engine:
+
+```text
+!web rust async traits
+```
+
+Schemeless URLs automatically use `https://`.
 
 ### Keyboard shortcuts
 
 ```text
 Ctrl + Alt + Space      Open / hide owl
 ↑ / ↓                   Navigate results
-Enter                   Launch / select / copy result
+Enter                   Launch / select / apply / copy / open result
 Space                   Activate an exact command from the command picker
-Tab                     Regenerate UUID when the UUID command is active
+Tab                     Autocomplete commands / run command-specific actions
 Esc                     Go back / hide owl
 ```
 
@@ -187,8 +256,9 @@ bun run tauri build
 
 ## Known issues
 
-This is `v0.2.2`. Things will still be rough around the edges.
+This is `v0.2.3`. Things will still be rough around the edges.
 
+* Global shortcut support currently requires X11. Wayland is not yet supported.
 * Some terminal applications may not launch correctly.
 * owl has only been tested on Linux so far.
 * Application discovery currently follows Linux desktop entry conventions.
@@ -203,7 +273,6 @@ No promises, but these are some things I'd like to explore:
 * More built in commands
 * File search
 * Emoji search
-* Web search
 * Terminal application support
 * Settings
 * Plugins
