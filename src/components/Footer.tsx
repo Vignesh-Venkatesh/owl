@@ -1,4 +1,4 @@
-import { ArrowUpDown, CornerDownLeft } from "lucide-react"
+import {ArrowUpDown, CornerDownLeft, Move} from "lucide-react"
 
 import Kbd from "./Kbd"
 import { FooterHint } from "../commands/types"
@@ -11,6 +11,7 @@ type FooterProps = {
 const footerHintIcons = {
   navigate: ArrowUpDown,
   enter: CornerDownLeft,
+  "navigate-grid": Move,
 }
 
 function Footer({ resultCount, hints }: FooterProps) {

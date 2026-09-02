@@ -197,6 +197,16 @@ Anything that doesn't look like a URL is sent to your configured search engine:
 
 Schemeless URLs automatically use `https://`.
 
+### Emoji data
+
+Emoji data is generated from `emojibase-data` and checked into the repository.
+
+Regenerate it with:
+
+```bash
+bun run build:emoji-data
+```
+
 ### Keyboard shortcuts
 
 ```text

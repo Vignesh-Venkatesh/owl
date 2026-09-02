@@ -245,24 +245,73 @@ function App() {
 
   // keyboard handler
   async function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    // arrow down key is pressed
-    if (event.key === "ArrowDown") {
-      event.preventDefault()
-      if (results.length === 0) {
-        return
-      }
-      setSelectedIndex((currentIndex) =>
-        Math.min(currentIndex + 1, results.length - 1))
-      return
-    }
+    // arrow keys move through results
+    if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "ArrowLeft" ||event.key === "ArrowRight") {
+      const navigation =
+        mode.kind === "command-active"
+          ? mode.command.navigation
+          : undefined
 
-    // arrow up key is pressed
-    if (event.key === "ArrowUp") {
+      const isGrid = navigation?.type === "grid"
+
+      // left/right should still move the text cursor for normal result lists
+      if (!isGrid && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
+        return
+      }
+
       event.preventDefault()
+
       if (results.length === 0) {
         return
       }
-      setSelectedIndex((currentIndex) => Math.max(currentIndex - 1, 0))
+
+      setSelectedIndex((currentIndex) => {
+        if (!isGrid) {
+          if (event.key === "ArrowDown") {
+            return Math.min(currentIndex + 1, results.length - 1)
+          }
+          return Math.max(currentIndex - 1, 0)
+        }
+        const columns = navigation.columns
+        const rowStart = Math.floor(currentIndex / columns) * columns
+        const rowEnd = Math.min(
+          rowStart + columns - 1,
+          results.length - 1,
+        )
+
+        switch (event.key) {
+          case "ArrowLeft":
+            return Math.max(currentIndex - 1, rowStart)
+          case "ArrowRight":
+            return Math.min(currentIndex + 1, rowEnd)
+            case "ArrowUp": {
+              const targetIndex = currentIndex - columns
+              return targetIndex >= 0
+                ? targetIndex
+                : currentIndex
+            }
+            case "ArrowDown": {
+              const targetIndex = currentIndex + columns
+              if (targetIndex < results.length) {
+                return targetIndex
+              }
+              const currentRow = Math.floor(currentIndex / columns)
+              const lastRow = Math.floor((results.length - 1) / columns)
+
+              // already on the final row
+              if (currentRow === lastRow) {
+                return currentIndex
+              }
+
+              // final row is shorter than the others
+              return results.length - 1
+            }
+
+          default:
+            return currentIndex
+        }
+      })
+
       return
     }
 
