@@ -106,6 +106,16 @@ export type ResultItem =
       keywords: string[]
       group: number | null
     }
+  | {
+      type: "lorem"
+      id: string
+      requestedCount: number
+      count: number
+      unit: "word" | "sentence" | "paragraph"
+      explicit: boolean
+      text: string | null
+      status: "valid" | "invalid"
+    }
 
 
 // represents what the search input is currently doing

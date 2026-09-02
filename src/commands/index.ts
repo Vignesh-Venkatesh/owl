@@ -6,6 +6,7 @@ import { themeCommand } from "./providers/theme"
 import { colorCommand } from "./providers/color";
 import { webCommand } from "./providers/web"
 import { emojiCommand } from "./providers/emoji"
+import { loremCommand } from "./providers/lorem"
 
 // single shared registry
 // built in commands will register themselves here
@@ -18,3 +19,4 @@ commandRegistry.register(themeCommand)
 commandRegistry.register(colorCommand)
 commandRegistry.register(webCommand)
 commandRegistry.register(emojiCommand)
+commandRegistry.register(loremCommand)

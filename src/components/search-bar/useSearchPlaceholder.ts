@@ -5,6 +5,8 @@ const PLACEHOLDERS = [
   "Type ! for commands",
   "!uuid",
   "!theme",
+  "!web",
+  "!lorem"
 ]
 
 const CYCLE_DURATION = 4000
