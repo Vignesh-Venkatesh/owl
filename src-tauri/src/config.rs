@@ -6,6 +6,9 @@ use tauri::{AppHandle, Manager};
 pub struct AppConfig {
     #[serde(default)]
     pub appearance: AppearanceConfig,
+
+    #[serde(default)]
+    pub web: WebConfig,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -22,8 +25,26 @@ impl Default for AppearanceConfig {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct WebConfig {
+    #[serde(default = "default_search_engine")]
+    pub search_engine: String,
+}
+
+impl Default for WebConfig {
+    fn default() -> Self {
+        Self {
+            search_engine: default_search_engine(),
+        }
+    }
+}
+
 fn default_theme() -> String {
     "owl".to_string()
+}
+
+fn default_search_engine() -> String {
+    "https://www.google.com/search?q={query}".to_string()
 }
 
 fn config_path(app: &AppHandle) -> Result<PathBuf, String> {

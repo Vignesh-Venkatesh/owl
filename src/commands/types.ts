@@ -22,6 +22,7 @@ export type CommandResultType = Exclude<ResultItem["type"],"app" | "command">
 export interface ActivationContext {
   toast: ToastApi
   copyToClipboard: (text: string) => Promise<void>
+  hideWindow: () => Promise<void>
 }
 
 export interface Command {
@@ -82,6 +83,13 @@ export type ResultItem =
       } | null
       status: "valid" | "invalid"
       activeFormat: "hex" | "rgb" | "hsl"
+    }
+  | {
+      type: "web"
+      id: string
+      query: string
+      target: string
+      kind: "url" | "search"
     }
 
 // represents what the search input is currently doing
