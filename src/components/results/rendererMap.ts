@@ -6,6 +6,7 @@ import ThemeResults from "./ThemeResults"
 import ColorResults from "./ColorResults"
 import WebResults from "./WebResults"
 import EmojiResults from "./EmojiResults"
+import LoremResults from "./LoremResults"
 
 export const rendererMap = {
   app: AppResults,
@@ -15,5 +16,6 @@ export const rendererMap = {
   theme: ThemeResults,
   color: ColorResults,
   web: WebResults,
-  emoji: EmojiResults
+  emoji: EmojiResults,
+  lorem: LoremResults
 }
