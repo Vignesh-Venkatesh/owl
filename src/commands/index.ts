@@ -5,6 +5,7 @@ import { uuidCommand } from "./providers/uuid";
 import { themeCommand } from "./providers/theme"
 import { colorCommand } from "./providers/color";
 import { webCommand } from "./providers/web"
+import { emojiCommand } from "./providers/emoji"
 
 // single shared registry
 // built in commands will register themselves here
@@ -16,3 +17,4 @@ commandRegistry.register(uuidCommand)
 commandRegistry.register(themeCommand)
 commandRegistry.register(colorCommand)
 commandRegistry.register(webCommand)
+commandRegistry.register(emojiCommand)

@@ -17,7 +17,13 @@ export type CommandRunOn =
   | "query-change"
   | "activation"
 
-export type CommandResultType = Exclude<ResultItem["type"],"app" | "command">
+export type CommandResultType = Exclude<ResultItem["type"], "app" | "command">
+
+export type CommandNavigation =
+  | {
+      type: "grid"
+      columns: number
+    }
 
 export interface ActivationContext {
   toast: ToastApi
@@ -40,7 +46,8 @@ export interface Command {
   preserveLastResultOnEmpty?: boolean
   footerHints?: (mode: InputMode,results: ResultItem[]) => FooterHint[]
   onActivate?: (item: ResultItem,ctx: ActivationContext) => void | Promise<void>
-  onTab?: (results: ResultItem[],ctx: ActivationContext) => ResultItem[] | void
+  onTab?: (results: ResultItem[], ctx: ActivationContext) => ResultItem[] | void
+  navigation?: CommandNavigation
 }
 
 export type ResultItem =
@@ -91,6 +98,15 @@ export type ResultItem =
       target: string
       kind: "url" | "search"
     }
+  | {
+      type: "emoji"
+      id: string
+      emoji: string
+      name: string
+      keywords: string[]
+      group: number | null
+    }
+
 
 // represents what the search input is currently doing
 // search: normal owl app search
@@ -115,6 +131,7 @@ export type InputMode =
 export type FooterHintIcon =
   | "navigate"
   | "enter"
+  | "navigate-grid"
 
 export interface FooterHint {
   key: string

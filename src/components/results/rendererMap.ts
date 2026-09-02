@@ -5,6 +5,7 @@ import UuidResults from "./UuidResults"
 import ThemeResults from "./ThemeResults"
 import ColorResults from "./ColorResults"
 import WebResults from "./WebResults"
+import EmojiResults from "./EmojiResults"
 
 export const rendererMap = {
   app: AppResults,
@@ -13,5 +14,6 @@ export const rendererMap = {
   uuid: UuidResults,
   theme: ThemeResults,
   color: ColorResults,
-  web: WebResults
+  web: WebResults,
+  emoji: EmojiResults
 }
